@@ -30,9 +30,8 @@ const Hero = () => {
             
             Diga o que você quer.{" "}
             <span className="text-coral">Corretores encontram
-
             </span>{" "}
-            por você.
+            para você.
           </motion.h1>
 
           <motion.p
