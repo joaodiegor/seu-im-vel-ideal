@@ -24,6 +24,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/pedidos" element={<Pedidos />} />
+            <Route path="/painel-corretor" element={<PainelCorretor />} />
+            <Route path="/meus-pedidos" element={<MeusPedidos />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
