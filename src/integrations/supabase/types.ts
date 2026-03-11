@@ -59,6 +59,51 @@ export type Database = {
         }
         Relationships: []
       }
+      property_requests: {
+        Row: {
+          bedrooms: number | null
+          created_at: string
+          details: string | null
+          id: string
+          max_budget: number | null
+          neighborhood: string
+          property_type: string
+          requester_name: string
+          requester_phone: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bedrooms?: number | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          max_budget?: number | null
+          neighborhood: string
+          property_type: string
+          requester_name: string
+          requester_phone: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bedrooms?: number | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          max_budget?: number | null
+          neighborhood?: string
+          property_type?: string
+          requester_name?: string
+          requester_phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string

@@ -30,6 +30,9 @@ const Navbar = () => {
           <a href="#corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Corretores
           </a>
+          <a href="/pedidos" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+            Pedidos
+          </a>
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
