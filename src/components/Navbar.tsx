@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Home, Menu, X, LogOut, User } from "lucide-react";
+import { Home, Menu, X, LogOut, User, LayoutDashboard, FileText } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
@@ -13,6 +13,8 @@ import {
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { user, profile, signOut } = useAuth();
+
+  const isBroker = profile?.user_type === "broker";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-md border-b border-primary-foreground/10">
@@ -30,9 +32,18 @@ const Navbar = () => {
           <a href="#corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Corretores
           </a>
-          <a href="/pedidos" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
-            Pedidos
-          </a>
+          {user && isBroker && (
+            <a href="/painel-corretor" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-1.5">
+              <LayoutDashboard className="h-3.5 w-3.5" />
+              Painel
+            </a>
+          )}
+          {user && !isBroker && (
+            <a href="/meus-pedidos" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5" />
+              Meus Pedidos
+            </a>
+          )}
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -53,6 +64,16 @@ const Navbar = () => {
                     </span>
                   )}
                 </div>
+                <DropdownMenuSeparator />
+                {isBroker ? (
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <a href="/painel-corretor"><LayoutDashboard className="h-4 w-4 mr-2" />Painel do Corretor</a>
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <a href="/meus-pedidos"><FileText className="h-4 w-4 mr-2" />Meus Pedidos</a>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
                   <LogOut className="h-4 w-4 mr-2" />
@@ -84,6 +105,11 @@ const Navbar = () => {
           <a href="#corretores" className="block text-sm text-primary-foreground/80 py-2">Corretores</a>
           {user ? (
             <>
+              {isBroker ? (
+                <a href="/painel-corretor" className="block text-sm text-primary-foreground/80 py-2">Painel do Corretor</a>
+              ) : (
+                <a href="/meus-pedidos" className="block text-sm text-primary-foreground/80 py-2">Meus Pedidos</a>
+              )}
               <div className="text-sm text-primary-foreground/80 py-2">
                 Olá, {profile?.full_name || user.email?.split("@")[0]}
               </div>
