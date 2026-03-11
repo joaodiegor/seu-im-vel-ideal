@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, MapPin, DollarSign, Send } from "lucide-react";
+import { Home, MapPin, DollarSign, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const bairros = [
   "Aracagy", "Calhau", "Renascença", "Cohama", "Turu",
@@ -14,6 +17,9 @@ const bairros = [
 ];
 
 const RequestForm = () => {
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     tipo: "",
     bairro: "",
@@ -24,9 +30,47 @@ const RequestForm = () => {
     telefone: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!user) {
+      toast.error("Você precisa estar logado para publicar um pedido.");
+      navigate("/auth");
+      return;
+    }
+
+    if (!formData.tipo || !formData.bairro || !formData.nome || !formData.telefone) {
+      toast.error("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    setLoading(true);
+
+    const budgetNum = formData.orcamento
+      ? parseFloat(formData.orcamento.replace(/\./g, "").replace(",", "."))
+      : null;
+
+    const { error } = await supabase.from("property_requests").insert({
+      user_id: user.id,
+      property_type: formData.tipo,
+      neighborhood: formData.bairro,
+      bedrooms: formData.quartos ? parseInt(formData.quartos) : null,
+      max_budget: budgetNum,
+      details: formData.detalhes || null,
+      requester_name: formData.nome,
+      requester_phone: formData.telefone,
+    });
+
+    setLoading(false);
+
+    if (error) {
+      toast.error("Erro ao publicar pedido. Tente novamente.");
+      console.error(error);
+      return;
+    }
+
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
+    setFormData({ tipo: "", bairro: "", quartos: "", orcamento: "", detalhes: "", nome: "", telefone: "" });
   };
 
   return (
@@ -75,8 +119,8 @@ const RequestForm = () => {
             <div className="space-y-5">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de imóvel</label>
-                  <Select onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de imóvel *</label>
+                  <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione" />
                     </SelectTrigger>
@@ -90,7 +134,7 @@ const RequestForm = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">Quartos</label>
-                  <Select onValueChange={(v) => setFormData({ ...formData, quartos: v })}>
+                  <Select value={formData.quartos} onValueChange={(v) => setFormData({ ...formData, quartos: v })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Qtd" />
                     </SelectTrigger>
@@ -104,8 +148,8 @@ const RequestForm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">Bairro preferido</label>
-                <Select onValueChange={(v) => setFormData({ ...formData, bairro: v })}>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Bairro preferido *</label>
+                <Select value={formData.bairro} onValueChange={(v) => setFormData({ ...formData, bairro: v })}>
                   <SelectTrigger>
                     <SelectValue placeholder="Escolha o bairro" />
                   </SelectTrigger>
@@ -138,27 +182,39 @@ const RequestForm = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Seu nome</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Seu nome *</label>
                   <Input
                     placeholder="Nome completo"
                     value={formData.nome}
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">WhatsApp</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">WhatsApp *</label>
                   <Input
                     placeholder="(98) 99999-9999"
                     value={formData.telefone}
                     onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                    required
                   />
                 </div>
               </div>
 
-              <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6">
-                <Send className="mr-2 h-5 w-5" />
-                Publicar pedido gratuitamente
+              <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  <Send className="mr-2 h-5 w-5" />
+                )}
+                {loading ? "Publicando..." : "Publicar pedido gratuitamente"}
               </Button>
+
+              {!user && (
+                <p className="text-center text-sm text-muted-foreground">
+                  Você precisa <a href="/auth" className="text-primary underline">entrar ou cadastrar</a> para publicar.
+                </p>
+              )}
             </div>
           </motion.form>
         </div>
