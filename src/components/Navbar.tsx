@@ -65,6 +65,9 @@ const Navbar = () => {
                   )}
                 </div>
                 <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <a href="/perfil"><User className="h-4 w-4 mr-2" />Meu Perfil</a>
+                </DropdownMenuItem>
                 {isBroker ? (
                   <DropdownMenuItem asChild className="cursor-pointer">
                     <a href="/painel-corretor"><LayoutDashboard className="h-4 w-4 mr-2" />Painel do Corretor</a>

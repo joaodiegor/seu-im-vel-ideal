@@ -9,6 +9,7 @@ import Auth from "./pages/Auth.tsx";
 import Pedidos from "./pages/Pedidos.tsx";
 import PainelCorretor from "./pages/PainelCorretor.tsx";
 import MeusPedidos from "./pages/MeusPedidos.tsx";
+import Perfil from "./pages/Perfil.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/pedidos" element={<Pedidos />} />
             <Route path="/painel-corretor" element={<PainelCorretor />} />
             <Route path="/meus-pedidos" element={<MeusPedidos />} />
+            <Route path="/perfil" element={<Perfil />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
