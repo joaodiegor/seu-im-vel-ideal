@@ -7,6 +7,8 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index.tsx";
 import Auth from "./pages/Auth.tsx";
 import Pedidos from "./pages/Pedidos.tsx";
+import PainelCorretor from "./pages/PainelCorretor.tsx";
+import MeusPedidos from "./pages/MeusPedidos.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
