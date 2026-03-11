@@ -104,6 +104,50 @@ export type Database = {
         }
         Relationships: []
       }
+      proposals: {
+        Row: {
+          broker_id: string
+          created_at: string
+          id: string
+          message: string
+          price: number | null
+          property_link: string | null
+          request_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          broker_id: string
+          created_at?: string
+          id?: string
+          message: string
+          price?: number | null
+          property_link?: string | null
+          request_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          broker_id?: string
+          created_at?: string
+          id?: string
+          message?: string
+          price?: number | null
+          property_link?: string | null
+          request_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "property_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
