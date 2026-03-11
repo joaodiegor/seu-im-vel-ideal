@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      broker_reviews: {
+        Row: {
+          broker_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          proposal_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          broker_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          proposal_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          broker_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "broker_reviews_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: true
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           area: string | null
@@ -171,6 +209,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_broker_stats: {
+        Args: { broker_uuid: string }
+        Returns: {
+          avg_rating: number
+          review_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

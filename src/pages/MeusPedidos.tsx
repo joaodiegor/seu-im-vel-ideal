@@ -5,26 +5,32 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   Home, MapPin, DollarSign, BedDouble, Clock, MessageSquare, User,
-  ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2
+  ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2, Star
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
+} from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface Proposal {
   id: string;
+  broker_id: string;
   message: string;
   price: number | null;
   property_link: string | null;
   status: string;
   created_at: string;
+  reviewed: boolean;
   broker_profile: {
     full_name: string;
     phone: string | null;
@@ -45,15 +51,7 @@ interface MyRequest {
 }
 
 const typeLabels: Record<string, string> = {
-  casa: "Casa",
-  apartamento: "Apartamento",
-  terreno: "Terreno",
-  comercial: "Comercial",
-};
-
-const statusLabels: Record<string, string> = {
-  active: "Ativo",
-  closed: "Encerrado",
+  casa: "Casa", apartamento: "Apartamento", terreno: "Terreno", comercial: "Comercial",
 };
 
 const proposalStatusLabels: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
@@ -75,6 +73,34 @@ const timeAgo = (date: string) => {
   return `${days}d atrás`;
 };
 
+const StarRating = ({ rating, onRate, size = "md" }: { rating: number; onRate?: (r: number) => void; size?: "sm" | "md" }) => {
+  const [hover, setHover] = useState(0);
+  const s = size === "sm" ? "h-4 w-4" : "h-6 w-6";
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onClick={() => onRate?.(star)}
+          onMouseEnter={() => onRate && setHover(star)}
+          onMouseLeave={() => onRate && setHover(0)}
+          className={onRate ? "cursor-pointer" : "cursor-default"}
+          disabled={!onRate}
+        >
+          <Star
+            className={`${s} ${
+              star <= (hover || rating)
+                ? "fill-amber-400 text-amber-400"
+                : "text-border"
+            } transition-colors`}
+          />
+        </button>
+      ))}
+    </div>
+  );
+};
+
 const MeusPedidos = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -83,12 +109,15 @@ const MeusPedidos = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
+  // Review modal
+  const [reviewTarget, setReviewTarget] = useState<Proposal | null>(null);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
+    if (!user) { navigate("/auth"); return; }
     fetchMyRequests();
   }, [user, authLoading]);
 
@@ -108,13 +137,16 @@ const MeusPedidos = () => {
     }
 
     const requestIds = requestsData.map((r: any) => r.id);
-    const { data: proposalsData } = await supabase
-      .from("proposals")
-      .select("*")
-      .in("request_id", requestIds)
-      .order("created_at", { ascending: false });
 
-    const brokerIds = [...new Set((proposalsData || []).map((p: any) => p.broker_id))];
+    const [proposalsRes, reviewsRes] = await Promise.all([
+      supabase.from("proposals").select("*").in("request_id", requestIds).order("created_at", { ascending: false }),
+      supabase.from("broker_reviews").select("proposal_id").eq("reviewer_id", user!.id),
+    ]);
+
+    const proposalsData = proposalsRes.data || [];
+    const reviewedProposalIds = new Set((reviewsRes.data || []).map((r: any) => r.proposal_id));
+
+    const brokerIds = [...new Set(proposalsData.map((p: any) => p.broker_id))];
     let brokerProfiles: Record<string, any> = {};
     if (brokerIds.length > 0) {
       const { data: profiles } = await supabase
@@ -128,10 +160,11 @@ const MeusPedidos = () => {
 
     const enrichedRequests: MyRequest[] = requestsData.map((req: any) => ({
       ...req,
-      proposals: (proposalsData || [])
+      proposals: proposalsData
         .filter((p: any) => p.request_id === req.id)
         .map((p: any) => ({
           ...p,
+          reviewed: reviewedProposalIds.has(p.id),
           broker_profile: brokerProfiles[p.broker_id] || null,
         })),
     }));
@@ -142,71 +175,58 @@ const MeusPedidos = () => {
 
   const handleProposalAction = async (proposalId: string, newStatus: "accepted" | "rejected") => {
     setActionLoading(proposalId);
-    const { error } = await supabase
-      .from("proposals")
-      .update({ status: newStatus })
-      .eq("id", proposalId);
-
+    const { error } = await supabase.from("proposals").update({ status: newStatus }).eq("id", proposalId);
     setActionLoading(null);
-
-    if (error) {
-      toast.error("Erro ao atualizar proposta.");
-      return;
-    }
-
+    if (error) { toast.error("Erro ao atualizar proposta."); return; }
     toast.success(newStatus === "accepted" ? "Proposta aceita!" : "Proposta recusada.");
-    setMyRequests((prev) =>
-      prev.map((req) => ({
-        ...req,
-        proposals: req.proposals.map((p) =>
-          p.id === proposalId ? { ...p, status: newStatus } : p
-        ),
-      }))
-    );
+    setMyRequests((prev) => prev.map((req) => ({
+      ...req,
+      proposals: req.proposals.map((p) => p.id === proposalId ? { ...p, status: newStatus } : p),
+    })));
   };
 
   const handleCloseRequest = async (requestId: string) => {
     setActionLoading(requestId);
-    const { error } = await supabase
-      .from("property_requests")
-      .update({ status: "closed" })
-      .eq("id", requestId);
-
+    const { error } = await supabase.from("property_requests").update({ status: "closed" }).eq("id", requestId);
     setActionLoading(null);
-
-    if (error) {
-      toast.error("Erro ao encerrar pedido.");
-      return;
-    }
-
+    if (error) { toast.error("Erro ao encerrar pedido."); return; }
     toast.success("Pedido encerrado com sucesso!");
-    setMyRequests((prev) =>
-      prev.map((req) =>
-        req.id === requestId ? { ...req, status: "closed" } : req
-      )
-    );
+    setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status: "closed" } : req));
   };
 
   const handleReopenRequest = async (requestId: string) => {
     setActionLoading(requestId);
-    const { error } = await supabase
-      .from("property_requests")
-      .update({ status: "active" })
-      .eq("id", requestId);
-
+    const { error } = await supabase.from("property_requests").update({ status: "active" }).eq("id", requestId);
     setActionLoading(null);
+    if (error) { toast.error("Erro ao reabrir pedido."); return; }
+    toast.success("Pedido reaberto!");
+    setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status: "active" } : req));
+  };
 
-    if (error) {
-      toast.error("Erro ao reabrir pedido.");
+  const handleSubmitReview = async () => {
+    if (!reviewTarget || reviewRating === 0) {
+      toast.error("Selecione uma nota de 1 a 5 estrelas.");
       return;
     }
-
-    toast.success("Pedido reaberto!");
-    setMyRequests((prev) =>
-      prev.map((req) =>
-        req.id === requestId ? { ...req, status: "active" } : req
-      )
-    );
+    setReviewSubmitting(true);
+    const { error } = await supabase.from("broker_reviews").insert({
+      proposal_id: reviewTarget.id,
+      broker_id: reviewTarget.broker_id,
+      reviewer_id: user!.id,
+      rating: reviewRating,
+      comment: reviewComment.trim() || null,
+    });
+    setReviewSubmitting(false);
+    if (error) { toast.error("Erro ao enviar avaliação."); return; }
+    toast.success("Avaliação enviada! Obrigado.");
+    // Mark as reviewed locally
+    setMyRequests((prev) => prev.map((req) => ({
+      ...req,
+      proposals: req.proposals.map((p) => p.id === reviewTarget.id ? { ...p, reviewed: true } : p),
+    })));
+    setReviewTarget(null);
+    setReviewRating(0);
+    setReviewComment("");
   };
 
   if (authLoading) return null;
@@ -224,7 +244,7 @@ const MeusPedidos = () => {
               Seus pedidos de imóveis
             </h1>
             <p className="text-muted-foreground mt-2 text-lg">
-              Acompanhe seus pedidos, aceite ou recuse propostas e encerre quando encontrar o ideal.
+              Acompanhe seus pedidos, aceite ou recuse propostas e avalie corretores.
             </p>
             {!loading && myRequests.length > 0 && (
               <div className="flex gap-4 mt-4">
@@ -273,13 +293,12 @@ const MeusPedidos = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
-                    {/* Request header */}
                     <div className="p-6">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-3 flex-wrap">
                           <Badge variant="secondary">{typeLabels[req.property_type] || req.property_type}</Badge>
                           <Badge variant={isActive ? "default" : "outline"}>
-                            {statusLabels[req.status] || req.status}
+                            {isActive ? "Ativo" : "Encerrado"}
                           </Badge>
                           {acceptedCount > 0 && (
                             <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
@@ -288,12 +307,10 @@ const MeusPedidos = () => {
                             </Badge>
                           )}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {timeAgo(req.created_at)}
-                          </span>
-                        </div>
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {timeAgo(req.created_at)}
+                        </span>
                       </div>
 
                       <div className="flex flex-wrap gap-4 text-sm text-foreground">
@@ -312,11 +329,8 @@ const MeusPedidos = () => {
                         )}
                       </div>
 
-                      {req.details && (
-                        <p className="text-sm text-muted-foreground mt-3">{req.details}</p>
-                      )}
+                      {req.details && <p className="text-sm text-muted-foreground mt-3">{req.details}</p>}
 
-                      {/* Actions row */}
                       <div className="flex items-center gap-3 mt-4">
                         <Button
                           variant="ghost"
@@ -336,48 +350,34 @@ const MeusPedidos = () => {
                             <AlertDialogTrigger asChild>
                               <Button variant="outline" size="sm" className="shrink-0">
                                 <Archive className="h-4 w-4 mr-1.5" />
-                                Encerrar pedido
+                                Encerrar
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Encerrar este pedido?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  O pedido não ficará mais visível para corretores e nenhuma nova proposta será recebida. Você poderá reabrir depois se precisar.
+                                  O pedido não ficará mais visível para corretores. Você poderá reabrir depois.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={() => handleCloseRequest(req.id)}
-                                  disabled={actionLoading === req.id}
-                                >
-                                  {actionLoading === req.id ? (
-                                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                                  ) : null}
+                                <AlertDialogAction onClick={() => handleCloseRequest(req.id)} disabled={actionLoading === req.id}>
+                                  {actionLoading === req.id && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
                                   Encerrar
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
                           </AlertDialog>
                         ) : (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="shrink-0"
-                            onClick={() => handleReopenRequest(req.id)}
-                            disabled={actionLoading === req.id}
-                          >
-                            {actionLoading === req.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-1.5" />
-                            ) : null}
-                            Reabrir pedido
+                          <Button variant="outline" size="sm" className="shrink-0" onClick={() => handleReopenRequest(req.id)} disabled={actionLoading === req.id}>
+                            {actionLoading === req.id && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
+                            Reabrir
                           </Button>
                         )}
                       </div>
                     </div>
 
-                    {/* Proposals list */}
                     <AnimatePresence>
                       {expandedId === req.id && req.proposals.length > 0 && (
                         <motion.div
@@ -392,14 +392,13 @@ const MeusPedidos = () => {
                               const pStatus = proposalStatusLabels[proposal.status] || proposalStatusLabels.pending;
                               const isPending = proposal.status === "pending";
                               const isAccepted = proposal.status === "accepted";
+                              const canReview = isAccepted && !proposal.reviewed;
 
                               return (
                                 <div
                                   key={proposal.id}
                                   className={`bg-card rounded-lg p-4 border shadow-sm ${
-                                    isAccepted
-                                      ? "border-emerald-200 ring-1 ring-emerald-100"
-                                      : "border-border/50"
+                                    isAccepted ? "border-emerald-200 ring-1 ring-emerald-100" : "border-border/50"
                                   }`}
                                 >
                                   <div className="flex items-center justify-between mb-2">
@@ -407,11 +406,7 @@ const MeusPedidos = () => {
                                       <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                                         isAccepted ? "bg-emerald-100" : "bg-primary/10"
                                       }`}>
-                                        {isAccepted ? (
-                                          <CheckCircle className="h-4 w-4 text-emerald-600" />
-                                        ) : (
-                                          <User className="h-4 w-4 text-primary" />
-                                        )}
+                                        {isAccepted ? <CheckCircle className="h-4 w-4 text-emerald-600" /> : <User className="h-4 w-4 text-primary" />}
                                       </div>
                                       <div>
                                         <p className="text-sm font-semibold text-foreground">
@@ -433,59 +428,60 @@ const MeusPedidos = () => {
                                   <div className="flex flex-wrap gap-3 mt-3">
                                     {proposal.price && (
                                       <Badge variant="outline" className="text-sm">
-                                        <DollarSign className="h-3 w-3 mr-1" />
-                                        {formatCurrency(proposal.price)}
+                                        <DollarSign className="h-3 w-3 mr-1" />{formatCurrency(proposal.price)}
                                       </Badge>
                                     )}
                                     {proposal.property_link && (
-                                      <a
-                                        href={proposal.property_link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm text-primary flex items-center gap-1 hover:underline"
-                                      >
-                                        <ExternalLink className="h-3 w-3" />
-                                        Ver imóvel
+                                      <a href={proposal.property_link} target="_blank" rel="noopener noreferrer"
+                                        className="text-sm text-primary flex items-center gap-1 hover:underline">
+                                        <ExternalLink className="h-3 w-3" />Ver imóvel
                                       </a>
                                     )}
                                     {proposal.broker_profile?.phone && (
-                                      <a
-                                        href={`https://wa.me/55${proposal.broker_profile.phone.replace(/\D/g, "")}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-sm flex items-center gap-1 hover:underline text-emerald-600"
-                                      >
+                                      <a href={`https://wa.me/55${proposal.broker_profile.phone.replace(/\D/g, "")}`}
+                                        target="_blank" rel="noopener noreferrer"
+                                        className="text-sm flex items-center gap-1 hover:underline text-emerald-600">
                                         WhatsApp
                                       </a>
                                     )}
                                   </div>
 
-                                  {/* Accept / Reject buttons */}
+                                  {/* Accept / Reject */}
                                   {isPending && isActive && (
                                     <div className="flex gap-2 mt-4 pt-3 border-t border-border/50">
-                                      <Button
-                                        size="sm"
-                                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                                      <Button size="sm" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
                                         onClick={() => handleProposalAction(proposal.id, "accepted")}
-                                        disabled={actionLoading === proposal.id}
-                                      >
-                                        {actionLoading === proposal.id ? (
-                                          <Loader2 className="h-4 w-4 animate-spin mr-1" />
-                                        ) : (
-                                          <CheckCircle className="h-4 w-4 mr-1" />
-                                        )}
+                                        disabled={actionLoading === proposal.id}>
+                                        {actionLoading === proposal.id ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <CheckCircle className="h-4 w-4 mr-1" />}
                                         Aceitar
                                       </Button>
+                                      <Button size="sm" variant="outline" className="flex-1"
+                                        onClick={() => handleProposalAction(proposal.id, "rejected")}
+                                        disabled={actionLoading === proposal.id}>
+                                        <XCircle className="h-4 w-4 mr-1" />Recusar
+                                      </Button>
+                                    </div>
+                                  )}
+
+                                  {/* Review button */}
+                                  {canReview && (
+                                    <div className="mt-4 pt-3 border-t border-border/50">
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        className="flex-1"
-                                        onClick={() => handleProposalAction(proposal.id, "rejected")}
-                                        disabled={actionLoading === proposal.id}
+                                        className="w-full border-amber-300 text-amber-700 hover:bg-amber-50"
+                                        onClick={() => { setReviewTarget(proposal); setReviewRating(0); setReviewComment(""); }}
                                       >
-                                        <XCircle className="h-4 w-4 mr-1" />
-                                        Recusar
+                                        <Star className="h-4 w-4 mr-1.5 fill-amber-400 text-amber-400" />
+                                        Avaliar este corretor
                                       </Button>
+                                    </div>
+                                  )}
+
+                                  {isAccepted && proposal.reviewed && (
+                                    <div className="mt-3 pt-3 border-t border-border/50 flex items-center gap-2 text-sm text-muted-foreground">
+                                      <CheckCircle className="h-4 w-4 text-amber-500" />
+                                      Avaliação enviada
                                     </div>
                                   )}
                                 </div>
@@ -509,6 +505,52 @@ const MeusPedidos = () => {
         </div>
       </main>
       <Footer />
+
+      {/* Review Modal */}
+      <Dialog open={!!reviewTarget} onOpenChange={(open) => !open && setReviewTarget(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-display text-xl">Avaliar corretor</DialogTitle>
+            <DialogDescription>
+              Como foi sua experiência com{" "}
+              <strong>{reviewTarget?.broker_profile?.full_name || "o corretor"}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-5 mt-2">
+            <div className="flex flex-col items-center gap-2">
+              <StarRating rating={reviewRating} onRate={setReviewRating} />
+              <span className="text-sm text-muted-foreground">
+                {reviewRating === 0 && "Selecione uma nota"}
+                {reviewRating === 1 && "Ruim"}
+                {reviewRating === 2 && "Regular"}
+                {reviewRating === 3 && "Bom"}
+                {reviewRating === 4 && "Muito bom"}
+                {reviewRating === 5 && "Excelente"}
+              </span>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Comentário <span className="text-muted-foreground font-normal">(opcional)</span>
+              </label>
+              <Textarea
+                placeholder="Conte como foi sua experiência..."
+                rows={3}
+                value={reviewComment}
+                onChange={(e) => setReviewComment(e.target.value)}
+              />
+            </div>
+            <Button
+              variant="hero"
+              className="w-full"
+              onClick={handleSubmitReview}
+              disabled={reviewSubmitting || reviewRating === 0}
+            >
+              {reviewSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Star className="h-4 w-4 mr-2" />}
+              {reviewSubmitting ? "Enviando..." : "Enviar avaliação"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
