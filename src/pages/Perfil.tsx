@@ -19,6 +19,7 @@ const Perfil = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userType, setUserType] = useState<"buyer" | "broker">("buyer");
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
