@@ -67,6 +67,7 @@ const PainelCorretor = () => {
   const [proposalMessage, setProposalMessage] = useState("");
   const [proposalPrice, setProposalPrice] = useState("");
   const [proposalLink, setProposalLink] = useState("");
+  const [proposalPhone, setProposalPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
