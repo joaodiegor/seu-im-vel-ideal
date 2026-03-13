@@ -151,6 +151,7 @@ export type Database = {
       proposals: {
         Row: {
           broker_id: string
+          broker_phone: string | null
           created_at: string
           id: string
           message: string
@@ -162,6 +163,7 @@ export type Database = {
         }
         Insert: {
           broker_id: string
+          broker_phone?: string | null
           created_at?: string
           id?: string
           message: string
@@ -173,6 +175,7 @@ export type Database = {
         }
         Update: {
           broker_id?: string
+          broker_phone?: string | null
           created_at?: string
           id?: string
           message?: string

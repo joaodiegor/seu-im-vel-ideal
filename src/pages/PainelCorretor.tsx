@@ -67,6 +67,7 @@ const PainelCorretor = () => {
   const [proposalMessage, setProposalMessage] = useState("");
   const [proposalPrice, setProposalPrice] = useState("");
   const [proposalLink, setProposalLink] = useState("");
+  const [proposalPhone, setProposalPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -123,7 +124,8 @@ const PainelCorretor = () => {
       message: proposalMessage.trim(),
       price: priceNum,
       property_link: proposalLink.trim() || null,
-    });
+      broker_phone: proposalPhone.trim() || null,
+    } as any);
 
     setSubmitting(false);
 
@@ -139,6 +141,7 @@ const PainelCorretor = () => {
     setProposalMessage("");
     setProposalPrice("");
     setProposalLink("");
+    setProposalPhone("");
   };
 
   const filtered = requests.filter((r) => {
@@ -334,6 +337,16 @@ const PainelCorretor = () => {
                   onChange={(e) => setProposalLink(e.target.value)}
                 />
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Telefone para contato <span className="text-muted-foreground font-normal">(opcional)</span>
+              </label>
+              <Input
+                placeholder="(11) 99999-9999"
+                value={proposalPhone}
+                onChange={(e) => setProposalPhone(e.target.value)}
+              />
             </div>
 
             <Button
