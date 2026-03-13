@@ -193,6 +193,37 @@ const Perfil = () => {
                 </div>
               </div>
 
+              {/* User type selector */}
+              <div className="p-6 border-b border-border/50">
+                <label className="block text-sm font-medium text-foreground mb-3">Tipo de conta</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setUserType("buyer")}
+                    className={`flex-1 p-3 rounded-xl border-2 transition-all text-left ${
+                      userType === "buyer"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <span className="text-sm font-semibold text-foreground block">Comprador</span>
+                    <span className="text-xs text-muted-foreground">Quero encontrar imóveis</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserType("broker")}
+                    className={`flex-1 p-3 rounded-xl border-2 transition-all text-left ${
+                      userType === "broker"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <span className="text-sm font-semibold text-foreground block">Corretor</span>
+                    <span className="text-xs text-muted-foreground">Quero enviar propostas</span>
+                  </button>
+                </div>
+              </div>
+
               {/* Form */}
               <div className="p-8 space-y-5">
                 <div>
