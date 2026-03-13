@@ -130,7 +130,7 @@ const Perfil = () => {
 
   if (authLoading) return null;
 
-  const isBroker = profile?.user_type === "broker";
+  const isBroker = userType === "broker";
 
   return (
     <div className="min-h-screen bg-background">
