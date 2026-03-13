@@ -19,6 +19,7 @@ const Perfil = () => {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userType, setUserType] = useState<"buyer" | "broker">("buyer");
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
@@ -38,6 +39,7 @@ const Perfil = () => {
 
   useEffect(() => {
     if (profile) {
+      setUserType(profile.user_type);
       setForm({
         full_name: profile.full_name || "",
         phone: profile.phone || "",
@@ -112,6 +114,7 @@ const Perfil = () => {
         area: form.area.trim() || null,
         specialty: form.specialty.trim() || null,
         creci: form.creci.trim() || null,
+        user_type: userType,
       })
       .eq("user_id", user.id);
 
@@ -127,7 +130,7 @@ const Perfil = () => {
 
   if (authLoading) return null;
 
-  const isBroker = profile?.user_type === "broker";
+  const isBroker = userType === "broker";
 
   return (
     <div className="min-h-screen bg-background">
@@ -187,6 +190,37 @@ const Perfil = () => {
                   {user?.email && (
                     <span className="text-sm text-muted-foreground">{user.email}</span>
                   )}
+                </div>
+              </div>
+
+              {/* User type selector */}
+              <div className="p-6 border-b border-border/50">
+                <label className="block text-sm font-medium text-foreground mb-3">Tipo de conta</label>
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setUserType("buyer")}
+                    className={`flex-1 p-3 rounded-xl border-2 transition-all text-left ${
+                      userType === "buyer"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <span className="text-sm font-semibold text-foreground block">Comprador</span>
+                    <span className="text-xs text-muted-foreground">Quero encontrar imóveis</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUserType("broker")}
+                    className={`flex-1 p-3 rounded-xl border-2 transition-all text-left ${
+                      userType === "broker"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/30"
+                    }`}
+                  >
+                    <span className="text-sm font-semibold text-foreground block">Corretor</span>
+                    <span className="text-xs text-muted-foreground">Quero enviar propostas</span>
+                  </button>
                 </div>
               </div>
 
