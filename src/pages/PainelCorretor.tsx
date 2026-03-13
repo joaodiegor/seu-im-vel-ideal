@@ -141,6 +141,7 @@ const PainelCorretor = () => {
     setProposalMessage("");
     setProposalPrice("");
     setProposalLink("");
+    setProposalPhone("");
   };
 
   const filtered = requests.filter((r) => {
