@@ -1,0 +1,3 @@
+
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS city text DEFAULT NULL;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS agency text DEFAULT NULL;

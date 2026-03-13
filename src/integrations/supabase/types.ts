@@ -54,9 +54,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          agency: string | null
           area: string | null
           avatar_url: string | null
           bio: string | null
+          city: string | null
           created_at: string
           creci: string | null
           full_name: string
@@ -68,9 +70,11 @@ export type Database = {
           user_type: Database["public"]["Enums"]["user_type"]
         }
         Insert: {
+          agency?: string | null
           area?: string | null
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
           created_at?: string
           creci?: string | null
           full_name?: string
@@ -82,9 +86,11 @@ export type Database = {
           user_type?: Database["public"]["Enums"]["user_type"]
         }
         Update: {
+          agency?: string | null
           area?: string | null
           avatar_url?: string | null
           bio?: string | null
+          city?: string | null
           created_at?: string
           creci?: string | null
           full_name?: string
