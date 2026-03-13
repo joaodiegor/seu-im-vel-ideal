@@ -124,7 +124,8 @@ const PainelCorretor = () => {
       message: proposalMessage.trim(),
       price: priceNum,
       property_link: proposalLink.trim() || null,
-    });
+      broker_phone: proposalPhone.trim() || null,
+    } as any);
 
     setSubmitting(false);
 
