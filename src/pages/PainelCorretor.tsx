@@ -336,7 +336,16 @@ const PainelCorretor = () => {
                   value={proposalLink}
                   onChange={(e) => setProposalLink(e.target.value)}
                 />
-              </div>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-1.5">
+                Telefone para contato <span className="text-muted-foreground font-normal">(opcional)</span>
+              </label>
+              <Input
+                placeholder="(11) 99999-9999"
+                value={proposalPhone}
+                onChange={(e) => setProposalPhone(e.target.value)}
+              />
             </div>
 
             <Button
