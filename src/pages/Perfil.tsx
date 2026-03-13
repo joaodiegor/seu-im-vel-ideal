@@ -114,6 +114,7 @@ const Perfil = () => {
         area: form.area.trim() || null,
         specialty: form.specialty.trim() || null,
         creci: form.creci.trim() || null,
+        user_type: userType,
       })
       .eq("user_id", user.id);
 
