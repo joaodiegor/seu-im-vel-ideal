@@ -39,6 +39,7 @@ const Perfil = () => {
 
   useEffect(() => {
     if (profile) {
+      setUserType(profile.user_type);
       setForm({
         full_name: profile.full_name || "",
         phone: profile.phone || "",
