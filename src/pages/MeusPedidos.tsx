@@ -183,10 +183,15 @@ const MeusPedidos = () => {
     setActionLoading(null);
     if (error) { toast.error("Erro ao atualizar proposta."); return; }
     toast.success(newStatus === "accepted" ? "Proposta aceita!" : "Proposta recusada.");
+    const updatedProposal = { ...myRequests.flatMap(r => r.proposals).find(p => p.id === proposalId)!, status: newStatus };
     setMyRequests((prev) => prev.map((req) => ({
       ...req,
       proposals: req.proposals.map((p) => p.id === proposalId ? { ...p, status: newStatus } : p),
     })));
+    // Open chat when accepting
+    if (newStatus === "accepted") {
+      setChatProposal(updatedProposal);
+    }
   };
 
   const handleCloseRequest = async (requestId: string) => {
