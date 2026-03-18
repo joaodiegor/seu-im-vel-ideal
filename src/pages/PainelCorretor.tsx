@@ -321,6 +321,70 @@ const PainelCorretor = () => {
               })}
             </div>
           )}
+
+          {/* Accepted Proposals - Chat */}
+          {!loading && acceptedProposals.length > 0 && (
+            <div className="mt-12">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground font-display flex items-center gap-2">
+                  <CheckCircle className="h-6 w-6 text-emerald-600" />
+                  Propostas aceitas
+                </h2>
+                <p className="text-muted-foreground mt-1">Continue a conversa com os compradores.</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {acceptedProposals.map((proposal, i) => (
+                  <motion.div
+                    key={proposal.id}
+                    className="bg-card rounded-xl p-6 border border-emerald-200 shadow-card flex flex-col"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                        Aceita
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {timeAgo(proposal.created_at)}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 mb-4 flex-1">
+                      <div className="flex items-center gap-2 text-foreground">
+                        <MapPin className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm font-medium capitalize">{proposal.request?.neighborhood}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-foreground">
+                        <Home className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm">{typeLabels[proposal.request?.property_type] || proposal.request?.property_type}</span>
+                      </div>
+                      {proposal.price && (
+                        <div className="flex items-center gap-2 text-foreground">
+                          <DollarSign className="h-4 w-4 text-primary shrink-0" />
+                          <span className="text-sm">{formatCurrency(proposal.price)}</span>
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Comprador: <span className="font-medium text-foreground">{proposal.request?.requester_name}</span>
+                      </p>
+                    </div>
+
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => setChatProposal(proposal)}
+                    >
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Conversar
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
