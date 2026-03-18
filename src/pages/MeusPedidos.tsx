@@ -116,6 +116,9 @@ const MeusPedidos = () => {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
+  // Chat modal
+  const [chatProposal, setChatProposal] = useState<Proposal | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/auth"); return; }
