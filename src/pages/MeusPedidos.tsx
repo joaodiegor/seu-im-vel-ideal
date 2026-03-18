@@ -18,6 +18,7 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
 } from "@/components/ui/dialog";
+import ProposalChat from "@/components/ProposalChat";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -115,6 +116,9 @@ const MeusPedidos = () => {
   const [reviewComment, setReviewComment] = useState("");
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
+  // Chat modal
+  const [chatProposal, setChatProposal] = useState<Proposal | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/auth"); return; }
@@ -179,10 +183,15 @@ const MeusPedidos = () => {
     setActionLoading(null);
     if (error) { toast.error("Erro ao atualizar proposta."); return; }
     toast.success(newStatus === "accepted" ? "Proposta aceita!" : "Proposta recusada.");
+    const updatedProposal = { ...myRequests.flatMap(r => r.proposals).find(p => p.id === proposalId)!, status: newStatus };
     setMyRequests((prev) => prev.map((req) => ({
       ...req,
       proposals: req.proposals.map((p) => p.id === proposalId ? { ...p, status: newStatus } : p),
     })));
+    // Open chat when accepting
+    if (newStatus === "accepted") {
+      setChatProposal(updatedProposal);
+    }
   };
 
   const handleCloseRequest = async (requestId: string) => {
@@ -463,6 +472,21 @@ const MeusPedidos = () => {
                                     </div>
                                   )}
 
+                                  {/* Chat button for accepted proposals */}
+                                  {isAccepted && (
+                                    <div className="mt-4 pt-3 border-t border-border/50">
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        className="w-full"
+                                        onClick={() => setChatProposal(proposal)}
+                                      >
+                                        <MessageSquare className="h-4 w-4 mr-1.5" />
+                                        Conversar com {proposal.broker_profile?.full_name || "o corretor"}
+                                      </Button>
+                                    </div>
+                                  )}
+
                                   {/* Review button */}
                                   {canReview && (
                                     <div className="mt-4 pt-3 border-t border-border/50">
@@ -549,6 +573,27 @@ const MeusPedidos = () => {
               {reviewSubmitting ? "Enviando..." : "Enviar avaliação"}
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Chat Modal */}
+      <Dialog open={!!chatProposal} onOpenChange={(open) => !open && setChatProposal(null)}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-0">
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              Chat com {chatProposal?.broker_profile?.full_name || "Corretor"}
+            </DialogTitle>
+            <DialogDescription>
+              Converse diretamente sobre o imóvel proposto.
+            </DialogDescription>
+          </DialogHeader>
+          {chatProposal && (
+            <ProposalChat
+              proposalId={chatProposal.id}
+              brokerName={chatProposal.broker_profile?.full_name || "Corretor"}
+            />
+          )}
         </DialogContent>
       </Dialog>
     </div>
