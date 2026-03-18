@@ -27,6 +27,20 @@ interface PropertyRequest {
   created_at: string;
 }
 
+interface AcceptedProposal {
+  id: string;
+  request_id: string;
+  message: string;
+  price: number | null;
+  status: string;
+  created_at: string;
+  request: {
+    property_type: string;
+    neighborhood: string;
+    requester_name: string;
+  };
+}
+
 const typeLabels: Record<string, string> = {
   casa: "Casa",
   apartamento: "Apartamento",
