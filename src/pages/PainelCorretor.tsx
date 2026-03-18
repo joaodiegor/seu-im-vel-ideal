@@ -318,7 +318,7 @@ const PainelCorretor = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$)</label>
+              <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$) *</label>
               <Input
                 placeholder="Ex: 450.000"
                 value={proposalPrice}
