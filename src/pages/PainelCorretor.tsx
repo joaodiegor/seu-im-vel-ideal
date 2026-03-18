@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, Loader2, CheckCircle, ExternalLink } from "lucide-react";
+import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, Loader2, CheckCircle, ExternalLink, MessageSquare } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import ProposalChat from "@/components/ProposalChat";
 
 interface PropertyRequest {
   id: string;
