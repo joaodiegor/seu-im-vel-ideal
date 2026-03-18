@@ -399,6 +399,32 @@ const PainelCorretor = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Chat Modal */}
+      <Dialog open={!!chatProposal} onOpenChange={(open) => !open && setChatProposal(null)}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-0">
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              Chat com {chatProposal?.request?.requester_name || "Comprador"}
+            </DialogTitle>
+            <DialogDescription>
+              {chatProposal && (
+                <>
+                  {typeLabels[chatProposal.request?.property_type] || chatProposal.request?.property_type} em{" "}
+                  <span className="capitalize">{chatProposal.request?.neighborhood}</span>
+                </>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          {chatProposal && (
+            <ProposalChat
+              proposalId={chatProposal.id}
+              brokerName={chatProposal.request?.requester_name || "Comprador"}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
