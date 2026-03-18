@@ -327,7 +327,7 @@ const PainelCorretor = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Link do imóvel <span className="text-muted-foreground font-normal">(opcional)</span>
+                Link do imóvel *
               </label>
               <div className="relative">
                 <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
