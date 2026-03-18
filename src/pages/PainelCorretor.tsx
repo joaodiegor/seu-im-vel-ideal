@@ -341,7 +341,7 @@ const PainelCorretor = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Telefone para contato <span className="text-muted-foreground font-normal">(opcional)</span>
+                Telefone para contato *
               </label>
               <Input
                 placeholder="(11) 99999-9999"
