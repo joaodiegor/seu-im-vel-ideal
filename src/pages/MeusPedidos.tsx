@@ -575,6 +575,27 @@ const MeusPedidos = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Chat Modal */}
+      <Dialog open={!!chatProposal} onOpenChange={(open) => !open && setChatProposal(null)}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-0">
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              Chat com {chatProposal?.broker_profile?.full_name || "Corretor"}
+            </DialogTitle>
+            <DialogDescription>
+              Converse diretamente sobre o imóvel proposto.
+            </DialogDescription>
+          </DialogHeader>
+          {chatProposal && (
+            <ProposalChat
+              proposalId={chatProposal.id}
+              brokerName={chatProposal.broker_profile?.full_name || "Corretor"}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
