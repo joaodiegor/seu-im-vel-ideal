@@ -85,6 +85,10 @@ const PainelCorretor = () => {
   const [proposalPhone, setProposalPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Accepted proposals with chat
+  const [acceptedProposals, setAcceptedProposals] = useState<AcceptedProposal[]>([]);
+  const [chatProposal, setChatProposal] = useState<AcceptedProposal | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) {
