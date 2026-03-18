@@ -107,8 +107,9 @@ const PainelCorretor = () => {
   };
 
   const handleSendProposal = async () => {
-    if (!selectedRequest || !proposalMessage.trim()) {
-      toast.error("Escreva uma mensagem para o comprador.");
+    if (!selectedRequest) return;
+    if (!proposalMessage.trim() || !proposalLink.trim() || !proposalPrice.trim() || !proposalPhone.trim()) {
+      toast.error("Preencha todos os campos antes de enviar.");
       return;
     }
 
