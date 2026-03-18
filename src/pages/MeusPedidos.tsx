@@ -472,6 +472,21 @@ const MeusPedidos = () => {
                                     </div>
                                   )}
 
+                                  {/* Chat button for accepted proposals */}
+                                  {isAccepted && (
+                                    <div className="mt-4 pt-3 border-t border-border/50">
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        className="w-full"
+                                        onClick={() => setChatProposal(proposal)}
+                                      >
+                                        <MessageSquare className="h-4 w-4 mr-1.5" />
+                                        Conversar com {proposal.broker_profile?.full_name || "o corretor"}
+                                      </Button>
+                                    </div>
+                                  )}
+
                                   {/* Review button */}
                                   {canReview && (
                                     <div className="mt-4 pt-3 border-t border-border/50">
