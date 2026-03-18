@@ -107,8 +107,9 @@ const PainelCorretor = () => {
   };
 
   const handleSendProposal = async () => {
-    if (!selectedRequest || !proposalMessage.trim()) {
-      toast.error("Escreva uma mensagem para o comprador.");
+    if (!selectedRequest) return;
+    if (!proposalMessage.trim() || !proposalLink.trim() || !proposalPrice.trim() || !proposalPhone.trim()) {
+      toast.error("Preencha todos os campos antes de enviar.");
       return;
     }
 
@@ -317,7 +318,7 @@ const PainelCorretor = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$)</label>
+              <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$) *</label>
               <Input
                 placeholder="Ex: 450.000"
                 value={proposalPrice}
@@ -326,7 +327,7 @@ const PainelCorretor = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Link do imóvel <span className="text-muted-foreground font-normal">(opcional)</span>
+                Link do imóvel *
               </label>
               <div className="relative">
                 <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -340,7 +341,7 @@ const PainelCorretor = () => {
             </div>
             <div>
               <label className="block text-sm font-medium text-foreground mb-1.5">
-                Telefone para contato <span className="text-muted-foreground font-normal">(opcional)</span>
+                Telefone para contato *
               </label>
               <Input
                 placeholder="(11) 99999-9999"
@@ -353,7 +354,7 @@ const PainelCorretor = () => {
               variant="hero"
               className="w-full"
               onClick={handleSendProposal}
-              disabled={submitting || !proposalMessage.trim()}
+              disabled={submitting || !proposalMessage.trim() || !proposalLink.trim() || !proposalPrice.trim() || !proposalPhone.trim()}
             >
               {submitting ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
