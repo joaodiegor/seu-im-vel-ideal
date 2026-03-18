@@ -106,7 +106,7 @@ const PainelCorretor = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    const [requestsRes, proposalsRes] = await Promise.all([
+    const [requestsRes, proposalsRes, acceptedRes] = await Promise.all([
       supabase
         .from("property_requests")
         .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, created_at")
@@ -116,11 +116,25 @@ const PainelCorretor = () => {
         .from("proposals")
         .select("request_id")
         .eq("broker_id", user!.id),
+      supabase
+        .from("proposals")
+        .select("id, request_id, message, price, status, created_at, property_requests(property_type, neighborhood, requester_name)")
+        .eq("broker_id", user!.id)
+        .eq("status", "accepted")
+        .order("created_at", { ascending: false }),
     ]);
 
     if (requestsRes.data) setRequests(requestsRes.data);
     if (proposalsRes.data) {
       setSentProposals(new Set(proposalsRes.data.map((p: any) => p.request_id)));
+    }
+    if (acceptedRes.data) {
+      setAcceptedProposals(
+        acceptedRes.data.map((p: any) => ({
+          ...p,
+          request: p.property_requests,
+        }))
+      );
     }
     setLoading(false);
   };
