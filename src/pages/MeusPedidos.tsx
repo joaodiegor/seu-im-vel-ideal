@@ -23,6 +23,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+interface ProposalImage {
+  id: string;
+  image_url: string;
+}
+
 interface Proposal {
   id: string;
   broker_id: string;
@@ -32,6 +37,7 @@ interface Proposal {
   status: string;
   created_at: string;
   reviewed: boolean;
+  images: ProposalImage[];
   broker_profile: {
     full_name: string;
     phone: string | null;
@@ -150,6 +156,22 @@ const MeusPedidos = () => {
     const proposalsData = proposalsRes.data || [];
     const reviewedProposalIds = new Set((reviewsRes.data || []).map((r: any) => r.proposal_id));
 
+    // Fetch proposal images
+    const proposalIds = proposalsData.map((p: any) => p.id);
+    let proposalImagesMap: Record<string, ProposalImage[]> = {};
+    if (proposalIds.length > 0) {
+      const { data: imagesData } = await supabase
+        .from("proposal_images")
+        .select("id, proposal_id, image_url")
+        .in("proposal_id", proposalIds);
+      if (imagesData) {
+        for (const img of imagesData) {
+          if (!proposalImagesMap[img.proposal_id]) proposalImagesMap[img.proposal_id] = [];
+          proposalImagesMap[img.proposal_id].push({ id: img.id, image_url: img.image_url });
+        }
+      }
+    }
+
     const brokerIds = [...new Set(proposalsData.map((p: any) => p.broker_id))];
     let brokerProfiles: Record<string, any> = {};
     if (brokerIds.length > 0) {
@@ -169,6 +191,7 @@ const MeusPedidos = () => {
         .map((p: any) => ({
           ...p,
           reviewed: reviewedProposalIds.has(p.id),
+          images: proposalImagesMap[p.id] || [],
           broker_profile: brokerProfiles[p.broker_id] || null,
         })),
     }));
@@ -433,6 +456,28 @@ const MeusPedidos = () => {
                                   </div>
 
                                   <p className="text-sm text-foreground mt-2 whitespace-pre-wrap">{proposal.message}</p>
+
+                                  {/* Proposal Images */}
+                                  {proposal.images.length > 0 && (
+                                    <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                      {proposal.images.map((img) => (
+                                        <a
+                                          key={img.id}
+                                          href={img.image_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:ring-2 hover:ring-primary/30 transition-shadow"
+                                        >
+                                          <img
+                                            src={img.image_url}
+                                            alt="Foto do imóvel"
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                          />
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
 
                                   <div className="flex flex-wrap gap-3 mt-3">
                                     {proposal.price && (
