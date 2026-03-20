@@ -156,6 +156,22 @@ const MeusPedidos = () => {
     const proposalsData = proposalsRes.data || [];
     const reviewedProposalIds = new Set((reviewsRes.data || []).map((r: any) => r.proposal_id));
 
+    // Fetch proposal images
+    const proposalIds = proposalsData.map((p: any) => p.id);
+    let proposalImagesMap: Record<string, ProposalImage[]> = {};
+    if (proposalIds.length > 0) {
+      const { data: imagesData } = await supabase
+        .from("proposal_images")
+        .select("id, proposal_id, image_url")
+        .in("proposal_id", proposalIds);
+      if (imagesData) {
+        for (const img of imagesData) {
+          if (!proposalImagesMap[img.proposal_id]) proposalImagesMap[img.proposal_id] = [];
+          proposalImagesMap[img.proposal_id].push({ id: img.id, image_url: img.image_url });
+        }
+      }
+    }
+
     const brokerIds = [...new Set(proposalsData.map((p: any) => p.broker_id))];
     let brokerProfiles: Record<string, any> = {};
     if (brokerIds.length > 0) {
@@ -175,6 +191,7 @@ const MeusPedidos = () => {
         .map((p: any) => ({
           ...p,
           reviewed: reviewedProposalIds.has(p.id),
+          images: proposalImagesMap[p.id] || [],
           broker_profile: brokerProfiles[p.broker_id] || null,
         })),
     }));
