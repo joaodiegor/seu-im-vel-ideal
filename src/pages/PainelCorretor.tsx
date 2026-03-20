@@ -3,9 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, Loader2, CheckCircle, ExternalLink, MessageSquare } from "lucide-react";
+import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, CheckCircle, MessageSquare, Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -15,6 +14,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ProposalChat from "@/components/ProposalChat";
+import ProposalFormModal from "@/components/ProposalFormModal";
 
 interface PropertyRequest {
   id: string;
@@ -27,11 +27,13 @@ interface PropertyRequest {
   created_at: string;
 }
 
-interface AcceptedProposal {
+interface BrokerProposal {
   id: string;
   request_id: string;
   message: string;
   price: number | null;
+  property_link: string | null;
+  broker_phone: string | null;
   status: string;
   created_at: string;
   request: {
@@ -68,33 +70,33 @@ const timeAgo = (date: string) => {
   return `${days}d atrás`;
 };
 
+const statusLabels: Record<string, { label: string; className: string }> = {
+  pending: { label: "Pendente", className: "bg-amber-100 text-amber-700 border-amber-200" },
+  accepted: { label: "Aceita", className: "bg-emerald-100 text-emerald-700 border-emerald-200" },
+  rejected: { label: "Recusada", className: "bg-red-100 text-red-700 border-red-200" },
+};
+
 const PainelCorretor = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [requests, setRequests] = useState<PropertyRequest[]>([]);
-  const [sentProposals, setSentProposals] = useState<Set<string>>(new Set());
+  const [sentProposalIds, setSentProposalIds] = useState<Set<string>>(new Set());
+  const [brokerProposals, setBrokerProposals] = useState<BrokerProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
 
-  // Proposal modal state
-  const [selectedRequest, setSelectedRequest] = useState<PropertyRequest | null>(null);
-  const [proposalMessage, setProposalMessage] = useState("");
-  const [proposalPrice, setProposalPrice] = useState("");
-  const [proposalLink, setProposalLink] = useState("");
-  const [proposalPhone, setProposalPhone] = useState("");
-  const [submitting, setSubmitting] = useState(false);
+  // Proposal form modal
+  const [formOpen, setFormOpen] = useState(false);
+  const [formRequest, setFormRequest] = useState<PropertyRequest | null>(null);
+  const [editingProposal, setEditingProposal] = useState<BrokerProposal | null>(null);
 
-  // Accepted proposals with chat
-  const [acceptedProposals, setAcceptedProposals] = useState<AcceptedProposal[]>([]);
-  const [chatProposal, setChatProposal] = useState<AcceptedProposal | null>(null);
+  // Chat modal
+  const [chatProposal, setChatProposal] = useState<BrokerProposal | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) {
-      navigate("/auth");
-      return;
-    }
+    if (!user) { navigate("/auth"); return; }
     if (profile && profile.user_type !== "broker") {
       toast.error("Apenas corretores podem acessar este painel.");
       navigate("/");
@@ -106,7 +108,7 @@ const PainelCorretor = () => {
   const fetchData = async () => {
     setLoading(true);
 
-    const [requestsRes, proposalsRes, acceptedRes] = await Promise.all([
+    const [requestsRes, proposalsRes] = await Promise.all([
       supabase
         .from("property_requests")
         .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, created_at")
@@ -114,68 +116,40 @@ const PainelCorretor = () => {
         .order("created_at", { ascending: false }),
       supabase
         .from("proposals")
-        .select("request_id")
-        .eq("broker_id", user!.id),
-      supabase
-        .from("proposals")
-        .select("id, request_id, message, price, status, created_at, property_requests(property_type, neighborhood, requester_name)")
+        .select("id, request_id, message, price, property_link, broker_phone, status, created_at, property_requests(property_type, neighborhood, requester_name)")
         .eq("broker_id", user!.id)
-        .eq("status", "accepted")
         .order("created_at", { ascending: false }),
     ]);
 
     if (requestsRes.data) setRequests(requestsRes.data);
     if (proposalsRes.data) {
-      setSentProposals(new Set(proposalsRes.data.map((p: any) => p.request_id)));
-    }
-    if (acceptedRes.data) {
-      setAcceptedProposals(
-        acceptedRes.data.map((p: any) => ({
-          ...p,
-          request: p.property_requests,
-        }))
-      );
+      const mapped = proposalsRes.data.map((p: any) => ({ ...p, request: p.property_requests }));
+      setBrokerProposals(mapped);
+      setSentProposalIds(new Set(mapped.map((p: any) => p.request_id)));
     }
     setLoading(false);
   };
 
-  const handleSendProposal = async () => {
-    if (!selectedRequest) return;
-    if (!proposalMessage.trim() || !proposalLink.trim() || !proposalPrice.trim() || !proposalPhone.trim()) {
-      toast.error("Preencha todos os campos antes de enviar.");
-      return;
-    }
+  const openNewProposal = (req: PropertyRequest) => {
+    setFormRequest(req);
+    setEditingProposal(null);
+    setFormOpen(true);
+  };
 
-    setSubmitting(true);
-
-    const priceNum = proposalPrice
-      ? parseFloat(proposalPrice.replace(/\./g, "").replace(",", "."))
-      : null;
-
-    const { error } = await supabase.from("proposals").insert({
-      request_id: selectedRequest.id,
-      broker_id: user!.id,
-      message: proposalMessage.trim(),
-      price: priceNum,
-      property_link: proposalLink.trim() || null,
-      broker_phone: proposalPhone.trim() || null,
-    } as any);
-
-    setSubmitting(false);
-
-    if (error) {
-      toast.error("Erro ao enviar proposta. Tente novamente.");
-      console.error(error);
-      return;
-    }
-
-    toast.success("Proposta enviada com sucesso!");
-    setSentProposals((prev) => new Set(prev).add(selectedRequest.id));
-    setSelectedRequest(null);
-    setProposalMessage("");
-    setProposalPrice("");
-    setProposalLink("");
-    setProposalPhone("");
+  const openEditProposal = (proposal: BrokerProposal) => {
+    // We need the request info to show in the modal
+    setFormRequest({
+      id: proposal.request_id,
+      property_type: proposal.request.property_type,
+      neighborhood: proposal.request.neighborhood,
+      requester_name: proposal.request.requester_name,
+      bedrooms: null,
+      max_budget: null,
+      details: null,
+      created_at: proposal.created_at,
+    });
+    setEditingProposal(proposal);
+    setFormOpen(true);
   };
 
   const filtered = requests.filter((r) => {
@@ -187,6 +161,9 @@ const PainelCorretor = () => {
     const matchesType = filterType === "all" || r.property_type === filterType;
     return matchesSearch && matchesType;
   });
+
+  const pendingProposals = brokerProposals.filter((p) => p.status === "pending");
+  const acceptedProposals = brokerProposals.filter((p) => p.status === "accepted");
 
   if (authLoading || (profile && profile.user_type !== "broker")) return null;
 
@@ -209,12 +186,7 @@ const PainelCorretor = () => {
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por bairro, nome ou detalhe..."
-                className="pl-10"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+              <Input placeholder="Buscar por bairro, nome ou detalhe..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <div className="w-full sm:w-48">
               <Select value={filterType} onValueChange={setFilterType}>
@@ -233,7 +205,7 @@ const PainelCorretor = () => {
             </div>
           </div>
 
-          {/* Results */}
+          {/* Available Requests */}
           {loading ? (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -254,14 +226,14 @@ const PainelCorretor = () => {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((req, i) => {
-                const alreadySent = sentProposals.has(req.id);
+                const alreadySent = sentProposalIds.has(req.id);
                 return (
                   <motion.div
                     key={req.id}
                     className="bg-card rounded-xl p-6 border border-border/50 shadow-card hover:shadow-elevated transition-shadow flex flex-col"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                    transition={{ duration: 0.4, delay: i * 0.04 }}
                   >
                     <div className="flex items-center justify-between mb-3">
                       <Badge variant="secondary" className="text-sm">
@@ -272,7 +244,6 @@ const PainelCorretor = () => {
                         {timeAgo(req.created_at)}
                       </span>
                     </div>
-
                     <div className="space-y-2 mb-4 flex-1">
                       <div className="flex items-center gap-2 text-foreground">
                         <MapPin className="h-4 w-4 text-primary shrink-0" />
@@ -294,7 +265,6 @@ const PainelCorretor = () => {
                         <p className="text-sm text-muted-foreground line-clamp-2 mt-2">{req.details}</p>
                       )}
                     </div>
-
                     <div className="pt-3 border-t border-border/50 space-y-3">
                       <span className="text-xs text-muted-foreground">
                         Publicado por <span className="font-medium text-foreground">{req.requester_name}</span>
@@ -305,12 +275,7 @@ const PainelCorretor = () => {
                           Proposta enviada
                         </Button>
                       ) : (
-                        <Button
-                          variant="hero"
-                          size="sm"
-                          className="w-full"
-                          onClick={() => setSelectedRequest(req)}
-                        >
+                        <Button variant="hero" size="sm" className="w-full" onClick={() => openNewProposal(req)}>
                           <Send className="h-4 w-4 mr-2" />
                           Enviar proposta
                         </Button>
@@ -319,6 +284,66 @@ const PainelCorretor = () => {
                   </motion.div>
                 );
               })}
+            </div>
+          )}
+
+          {/* My Pending Proposals - Editable */}
+          {!loading && pendingProposals.length > 0 && (
+            <div className="mt-12">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground font-display flex items-center gap-2">
+                  <Send className="h-6 w-6 text-primary" />
+                  Minhas propostas enviadas
+                </h2>
+                <p className="text-muted-foreground mt-1">Propostas aguardando resposta do comprador. Você pode editá-las.</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {pendingProposals.map((proposal, i) => (
+                  <motion.div
+                    key={proposal.id}
+                    className="bg-card rounded-xl p-6 border border-border/50 shadow-card flex flex-col"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.04 }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Badge className={statusLabels[proposal.status]?.className || ""}>
+                        {statusLabels[proposal.status]?.label || proposal.status}
+                      </Badge>
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {timeAgo(proposal.created_at)}
+                      </span>
+                    </div>
+                    <div className="space-y-2 mb-4 flex-1">
+                      <div className="flex items-center gap-2 text-foreground">
+                        <MapPin className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm font-medium capitalize">{proposal.request?.neighborhood}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-foreground">
+                        <Home className="h-4 w-4 text-primary shrink-0" />
+                        <span className="text-sm">{typeLabels[proposal.request?.property_type] || proposal.request?.property_type}</span>
+                      </div>
+                      {proposal.price && (
+                        <div className="flex items-center gap-2 text-foreground">
+                          <DollarSign className="h-4 w-4 text-primary shrink-0" />
+                          <span className="text-sm">{formatCurrency(proposal.price)}</span>
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground line-clamp-2">{proposal.message}</p>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => openEditProposal(proposal)}
+                    >
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Editar proposta
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -337,20 +362,17 @@ const PainelCorretor = () => {
                   <motion.div
                     key={proposal.id}
                     className="bg-card rounded-xl p-6 border border-emerald-200 shadow-card flex flex-col"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                    transition={{ duration: 0.4, delay: i * 0.04 }}
                   >
                     <div className="flex items-center justify-between mb-3">
-                      <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
-                        Aceita
-                      </Badge>
+                      <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">Aceita</Badge>
                       <span className="text-xs text-muted-foreground flex items-center gap-1">
                         <Clock className="h-3 w-3" />
                         {timeAgo(proposal.created_at)}
                       </span>
                     </div>
-
                     <div className="space-y-2 mb-4 flex-1">
                       <div className="flex items-center gap-2 text-foreground">
                         <MapPin className="h-4 w-4 text-primary shrink-0" />
@@ -366,17 +388,11 @@ const PainelCorretor = () => {
                           <span className="text-sm">{formatCurrency(proposal.price)}</span>
                         </div>
                       )}
-                      <p className="text-xs text-muted-foreground mt-1">
+                      <p className="text-xs text-muted-foreground">
                         Comprador: <span className="font-medium text-foreground">{proposal.request?.requester_name}</span>
                       </p>
                     </div>
-
-                    <Button
-                      variant="default"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => setChatProposal(proposal)}
-                    >
+                    <Button variant="default" size="sm" className="w-full" onClick={() => setChatProposal(proposal)}>
                       <MessageSquare className="h-4 w-4 mr-2" />
                       Conversar
                     </Button>
@@ -389,80 +405,19 @@ const PainelCorretor = () => {
       </main>
       <Footer />
 
-      {/* Proposal Modal */}
-      <Dialog open={!!selectedRequest} onOpenChange={(open) => !open && setSelectedRequest(null)}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="font-display text-xl">Enviar proposta</DialogTitle>
-            <DialogDescription>
-              {selectedRequest && (
-                <>
-                  Para: <strong>{selectedRequest.requester_name}</strong> — {typeLabels[selectedRequest.property_type]} em{" "}
-                  <span className="capitalize">{selectedRequest.neighborhood}</span>
-                </>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 mt-2">
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Sua mensagem *</label>
-              <Textarea
-                placeholder="Apresente-se e descreva o imóvel que você tem para oferecer..."
-                rows={4}
-                value={proposalMessage}
-                onChange={(e) => setProposalMessage(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$) *</label>
-              <Input
-                placeholder="Ex: 450.000"
-                value={proposalPrice}
-                onChange={(e) => setProposalPrice(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                Link do imóvel *
-              </label>
-              <div className="relative">
-                <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="https://..."
-                  className="pl-10"
-                  value={proposalLink}
-                  onChange={(e) => setProposalLink(e.target.value)}
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">
-                Telefone para contato *
-              </label>
-              <Input
-                placeholder="(11) 99999-9999"
-                value={proposalPhone}
-                onChange={(e) => setProposalPhone(e.target.value)}
-              />
-            </div>
-
-            <Button
-              variant="hero"
-              className="w-full"
-              onClick={handleSendProposal}
-              disabled={submitting || !proposalMessage.trim() || !proposalLink.trim() || !proposalPrice.trim() || !proposalPhone.trim()}
-            >
-              {submitting ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4 mr-2" />
-              )}
-              {submitting ? "Enviando..." : "Enviar proposta"}
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Proposal Form Modal (create / edit) */}
+      {formRequest && (
+        <ProposalFormModal
+          open={formOpen}
+          onClose={() => { setFormOpen(false); setFormRequest(null); setEditingProposal(null); }}
+          requestId={formRequest.id}
+          requesterName={formRequest.requester_name}
+          propertyType={formRequest.property_type}
+          neighborhood={formRequest.neighborhood}
+          editProposal={editingProposal}
+          onSuccess={fetchData}
+        />
+      )}
 
       {/* Chat Modal */}
       <Dialog open={!!chatProposal} onOpenChange={(open) => !open && setChatProposal(null)}>
@@ -482,10 +437,7 @@ const PainelCorretor = () => {
             </DialogDescription>
           </DialogHeader>
           {chatProposal && (
-            <ProposalChat
-              proposalId={chatProposal.id}
-              brokerName={chatProposal.request?.requester_name || "Comprador"}
-            />
+            <ProposalChat proposalId={chatProposal.id} brokerName={chatProposal.request?.requester_name || "Comprador"} />
           )}
         </DialogContent>
       </Dialog>

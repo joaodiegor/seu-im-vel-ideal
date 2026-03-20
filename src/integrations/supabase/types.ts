@@ -180,6 +180,35 @@ export type Database = {
         }
         Relationships: []
       }
+      proposal_images: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          proposal_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          proposal_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          proposal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_images_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposals: {
         Row: {
           broker_id: string
