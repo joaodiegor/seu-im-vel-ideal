@@ -457,6 +457,28 @@ const MeusPedidos = () => {
 
                                   <p className="text-sm text-foreground mt-2 whitespace-pre-wrap">{proposal.message}</p>
 
+                                  {/* Proposal Images */}
+                                  {proposal.images.length > 0 && (
+                                    <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                      {proposal.images.map((img) => (
+                                        <a
+                                          key={img.id}
+                                          href={img.image_url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:ring-2 hover:ring-primary/30 transition-shadow"
+                                        >
+                                          <img
+                                            src={img.image_url}
+                                            alt="Foto do imóvel"
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                          />
+                                        </a>
+                                      ))}
+                                    </div>
+                                  )}
+
                                   <div className="flex flex-wrap gap-3 mt-3">
                                     {proposal.price && (
                                       <Badge variant="outline" className="text-sm">
