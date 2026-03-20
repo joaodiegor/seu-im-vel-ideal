@@ -23,6 +23,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
+interface ProposalImage {
+  id: string;
+  image_url: string;
+}
+
 interface Proposal {
   id: string;
   broker_id: string;
@@ -32,6 +37,7 @@ interface Proposal {
   status: string;
   created_at: string;
   reviewed: boolean;
+  images: ProposalImage[];
   broker_profile: {
     full_name: string;
     phone: string | null;
