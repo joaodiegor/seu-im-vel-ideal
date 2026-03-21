@@ -5,7 +5,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   Home, MapPin, DollarSign, BedDouble, Clock, MessageSquare, User,
-  ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2, Star
+  ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2, Star,
+  ChevronLeft, ChevronRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -104,6 +105,61 @@ const StarRating = ({ rating, onRate, size = "md" }: { rating: number; onRate?: 
           />
         </button>
       ))}
+    </div>
+  );
+};
+
+const ImageCarousel = ({ images }: { images: ProposalImage[] }) => {
+  const [current, setCurrent] = useState(0);
+  const total = images.length;
+
+  const prev = () => setCurrent((c) => (c === 0 ? total - 1 : c - 1));
+  const next = () => setCurrent((c) => (c === total - 1 ? 0 : c + 1));
+
+  return (
+    <div className="mt-3 relative rounded-lg overflow-hidden border border-border/50 bg-secondary/20">
+      <div className="relative aspect-video">
+        <img
+          src={images[current].image_url}
+          alt={`Foto ${current + 1} de ${total}`}
+          className="w-full h-full object-contain"
+          loading="lazy"
+        />
+        {total > 1 && (
+          <>
+            <button
+              onClick={prev}
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:bg-background transition-colors"
+            >
+              <ChevronLeft className="h-4 w-4 text-foreground" />
+            </button>
+            <button
+              onClick={next}
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:bg-background transition-colors"
+            >
+              <ChevronRight className="h-4 w-4 text-foreground" />
+            </button>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-xs font-medium text-foreground">
+              {current + 1} / {total}
+            </div>
+          </>
+        )}
+      </div>
+      {total > 1 && (
+        <div className="flex gap-1.5 p-2 overflow-x-auto">
+          {images.map((img, i) => (
+            <button
+              key={img.id}
+              onClick={() => setCurrent(i)}
+              className={`shrink-0 w-12 h-12 rounded-md overflow-hidden border-2 transition-colors ${
+                i === current ? "border-primary" : "border-transparent hover:border-border"
+              }`}
+            >
+              <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
@@ -457,26 +513,9 @@ const MeusPedidos = () => {
 
                                   <p className="text-sm text-foreground mt-2 whitespace-pre-wrap">{proposal.message}</p>
 
-                                  {/* Proposal Images */}
+                                  {/* Proposal Images Carousel */}
                                   {proposal.images.length > 0 && (
-                                    <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
-                                      {proposal.images.map((img) => (
-                                        <a
-                                          key={img.id}
-                                          href={img.image_url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="aspect-square rounded-lg overflow-hidden border border-border/50 hover:ring-2 hover:ring-primary/30 transition-shadow"
-                                        >
-                                          <img
-                                            src={img.image_url}
-                                            alt="Foto do imóvel"
-                                            className="w-full h-full object-cover"
-                                            loading="lazy"
-                                          />
-                                        </a>
-                                      ))}
-                                    </div>
+                                    <ImageCarousel images={proposal.images} />
                                   )}
 
                                   <div className="flex flex-wrap gap-3 mt-3">
