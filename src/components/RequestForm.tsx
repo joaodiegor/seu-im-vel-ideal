@@ -56,11 +56,17 @@ const RequestForm = () => {
       ? parseFloat(formData.orcamento.replace(/\./g, "").replace(",", "."))
       : null;
 
+    const minAreaNum = formData.metragem_minima
+      ? parseFloat(formData.metragem_minima.replace(/\./g, "").replace(",", "."))
+      : null;
+
     const { error } = await supabase.from("property_requests").insert({
       user_id: user.id,
       property_type: formData.tipo,
       neighborhood: formData.bairro,
-      bedrooms: formData.quartos ? parseInt(formData.quartos) : null,
+      bedrooms: showQuartosBanheiros && formData.quartos ? parseInt(formData.quartos) : null,
+      bathrooms: showQuartosBanheiros && formData.banheiros ? parseInt(formData.banheiros) : null,
+      min_area: minAreaNum,
       max_budget: budgetNum,
       details: formData.detalhes || null,
       requester_name: formData.nome,
