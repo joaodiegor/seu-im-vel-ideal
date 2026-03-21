@@ -46,7 +46,8 @@ interface BrokerProposal {
 const typeLabels: Record<string, string> = {
   casa: "Casa",
   apartamento: "Apartamento",
-  terreno: "Terreno",
+  casa_condominio: "Casa de Condomínio",
+  terreno: "Terreno / Lote",
   comercial: "Comercial",
 };
 
