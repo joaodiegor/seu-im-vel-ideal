@@ -196,11 +196,12 @@ const PainelCorretor = () => {
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Tipo" />
                 </SelectTrigger>
-                <SelectContent>
+               <SelectContent>
                   <SelectItem value="all">Todos os tipos</SelectItem>
                   <SelectItem value="casa">Casa</SelectItem>
                   <SelectItem value="apartamento">Apartamento</SelectItem>
-                  <SelectItem value="terreno">Terreno</SelectItem>
+                  <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
+                  <SelectItem value="terreno">Terreno / Lote</SelectItem>
                   <SelectItem value="comercial">Comercial</SelectItem>
                 </SelectContent>
               </Select>
