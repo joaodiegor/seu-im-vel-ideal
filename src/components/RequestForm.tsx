@@ -177,7 +177,7 @@ const RequestForm = () => {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">Metragem mínima (m²)</label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Área mínima do imóvel (m²)</label>
                 <Input
                   placeholder="Ex: 120"
                   value={formData.metragem_minima}
