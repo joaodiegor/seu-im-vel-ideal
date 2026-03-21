@@ -137,11 +137,13 @@ export type Database = {
       }
       property_requests: {
         Row: {
+          bathrooms: number | null
           bedrooms: number | null
           created_at: string
           details: string | null
           id: string
           max_budget: number | null
+          min_area: number | null
           neighborhood: string
           property_type: string
           requester_name: string
@@ -151,11 +153,13 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          bathrooms?: number | null
           bedrooms?: number | null
           created_at?: string
           details?: string | null
           id?: string
           max_budget?: number | null
+          min_area?: number | null
           neighborhood: string
           property_type: string
           requester_name: string
@@ -165,11 +169,13 @@ export type Database = {
           user_id: string
         }
         Update: {
+          bathrooms?: number | null
           bedrooms?: number | null
           created_at?: string
           details?: string | null
           id?: string
           max_budget?: number | null
+          min_area?: number | null
           neighborhood?: string
           property_type?: string
           requester_name?: string

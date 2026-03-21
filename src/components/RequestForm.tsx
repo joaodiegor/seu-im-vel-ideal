@@ -16,6 +16,8 @@ const bairros = [
   "Jardim Eldorado", "Altos do Calhau", "Outro",
 ];
 
+const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
+
 const RequestForm = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
@@ -24,11 +26,15 @@ const RequestForm = () => {
     tipo: "",
     bairro: "",
     quartos: "",
+    banheiros: "",
+    metragem_minima: "",
     orcamento: "",
     detalhes: "",
     nome: "",
     telefone: "",
   });
+
+  const showQuartosBanheiros = tiposComQuartos.includes(formData.tipo);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,11 +56,17 @@ const RequestForm = () => {
       ? parseFloat(formData.orcamento.replace(/\./g, "").replace(",", "."))
       : null;
 
+    const minAreaNum = formData.metragem_minima
+      ? parseFloat(formData.metragem_minima.replace(/\./g, "").replace(",", "."))
+      : null;
+
     const { error } = await supabase.from("property_requests").insert({
       user_id: user.id,
       property_type: formData.tipo,
       neighborhood: formData.bairro,
-      bedrooms: formData.quartos ? parseInt(formData.quartos) : null,
+      bedrooms: showQuartosBanheiros && formData.quartos ? parseInt(formData.quartos) : null,
+      bathrooms: showQuartosBanheiros && formData.banheiros ? parseInt(formData.banheiros) : null,
+      min_area: minAreaNum,
       max_budget: budgetNum,
       details: formData.detalhes || null,
       requester_name: formData.nome,
@@ -70,7 +82,7 @@ const RequestForm = () => {
     }
 
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
-    setFormData({ tipo: "", bairro: "", quartos: "", orcamento: "", detalhes: "", nome: "", telefone: "" });
+    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "" });
   };
 
   return (
@@ -117,34 +129,60 @@ const RequestForm = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de imóvel *</label>
-                  <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="casa">Casa</SelectItem>
-                      <SelectItem value="apartamento">Apartamento</SelectItem>
-                      <SelectItem value="terreno">Terreno</SelectItem>
-                      <SelectItem value="comercial">Comercial</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de imóvel *</label>
+                <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v, quartos: tiposComQuartos.includes(v) ? formData.quartos : "", banheiros: tiposComQuartos.includes(v) ? formData.banheiros : "" })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="casa">Casa</SelectItem>
+                    <SelectItem value="apartamento">Apartamento</SelectItem>
+                    <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
+                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
+                    <SelectItem value="comercial">Comercial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {showQuartosBanheiros && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Quartos</label>
+                    <Select value={formData.quartos} onValueChange={(v) => setFormData({ ...formData, quartos: v })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Qtd" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1,2,3,4,5].map(n => (
+                          <SelectItem key={n} value={String(n)}>{n}+</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Banheiros</label>
+                    <Select value={formData.banheiros} onValueChange={(v) => setFormData({ ...formData, banheiros: v })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Qtd" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1,2,3,4,5].map(n => (
+                          <SelectItem key={n} value={String(n)}>{n}+</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Quartos</label>
-                  <Select value={formData.quartos} onValueChange={(v) => setFormData({ ...formData, quartos: v })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Qtd" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1,2,3,4,5].map(n => (
-                        <SelectItem key={n} value={String(n)}>{n}+</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Metragem mínima (m²)</label>
+                <Input
+                  placeholder="Ex: 120"
+                  value={formData.metragem_minima}
+                  onChange={(e) => setFormData({ ...formData, metragem_minima: e.target.value })}
+                />
               </div>
 
               <div>
