@@ -16,6 +16,8 @@ const bairros = [
   "Jardim Eldorado", "Altos do Calhau", "Outro",
 ];
 
+const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
+
 const RequestForm = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
@@ -24,11 +26,15 @@ const RequestForm = () => {
     tipo: "",
     bairro: "",
     quartos: "",
+    banheiros: "",
+    metragem_minima: "",
     orcamento: "",
     detalhes: "",
     nome: "",
     telefone: "",
   });
+
+  const showQuartosBanheiros = tiposComQuartos.includes(formData.tipo);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
