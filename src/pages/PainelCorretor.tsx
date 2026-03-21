@@ -395,10 +395,16 @@ const PainelCorretor = () => {
                         Comprador: <span className="font-medium text-foreground">{proposal.request?.requester_name}</span>
                       </p>
                     </div>
-                    <Button variant="default" size="sm" className="w-full" onClick={() => setChatProposal(proposal)}>
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Conversar
-                    </Button>
+                    <div className="space-y-2">
+                      <Button variant="default" size="sm" className="w-full" onClick={() => setChatProposal(proposal)}>
+                        <MessageSquare className="h-4 w-4 mr-2" />
+                        Conversar
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full" onClick={() => openEditProposal(proposal)}>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Editar proposta
+                      </Button>
+                    </div>
                   </motion.div>
                 ))}
               </div>
