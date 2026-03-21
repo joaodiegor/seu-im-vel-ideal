@@ -54,6 +54,7 @@ const typeLabels: Record<string, string> = {
 const typeIcons: Record<string, string> = {
   casa: "🏠",
   apartamento: "🏢",
+  casa_condominio: "🏘️",
   terreno: "🌳",
   comercial: "🏪",
 };
