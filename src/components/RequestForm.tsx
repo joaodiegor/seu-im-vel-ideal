@@ -129,34 +129,60 @@ const RequestForm = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             <div className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de imóvel *</label>
-                  <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Selecione" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="casa">Casa</SelectItem>
-                      <SelectItem value="apartamento">Apartamento</SelectItem>
-                      <SelectItem value="terreno">Terreno</SelectItem>
-                      <SelectItem value="comercial">Comercial</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Tipo de imóvel *</label>
+                <Select value={formData.tipo} onValueChange={(v) => setFormData({ ...formData, tipo: v, quartos: tiposComQuartos.includes(v) ? formData.quartos : "", banheiros: tiposComQuartos.includes(v) ? formData.banheiros : "" })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="casa">Casa</SelectItem>
+                    <SelectItem value="apartamento">Apartamento</SelectItem>
+                    <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
+                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
+                    <SelectItem value="comercial">Comercial</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {showQuartosBanheiros && (
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Quartos</label>
+                    <Select value={formData.quartos} onValueChange={(v) => setFormData({ ...formData, quartos: v })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Qtd" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1,2,3,4,5].map(n => (
+                          <SelectItem key={n} value={String(n)}>{n}+</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">Banheiros</label>
+                    <Select value={formData.banheiros} onValueChange={(v) => setFormData({ ...formData, banheiros: v })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Qtd" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {[1,2,3,4,5].map(n => (
+                          <SelectItem key={n} value={String(n)}>{n}+</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Quartos</label>
-                  <Select value={formData.quartos} onValueChange={(v) => setFormData({ ...formData, quartos: v })}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Qtd" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {[1,2,3,4,5].map(n => (
-                        <SelectItem key={n} value={String(n)}>{n}+</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Metragem mínima (m²)</label>
+                <Input
+                  placeholder="Ex: 120"
+                  value={formData.metragem_minima}
+                  onChange={(e) => setFormData({ ...formData, metragem_minima: e.target.value })}
+                />
               </div>
 
               <div>
