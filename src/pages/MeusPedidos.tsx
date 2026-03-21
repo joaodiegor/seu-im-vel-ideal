@@ -164,7 +164,7 @@ const ImageCarousel = ({ images }: { images: ProposalImage[] }) => {
   );
 };
 
-
+const MeusPedidos = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [myRequests, setMyRequests] = useState<MyRequest[]>([]);
