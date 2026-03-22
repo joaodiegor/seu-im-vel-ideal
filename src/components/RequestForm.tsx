@@ -87,7 +87,7 @@ const RequestForm = () => {
     }
 
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
-    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "" });
+    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
   };
 
   return (
