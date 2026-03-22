@@ -12,9 +12,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
 const bairros = [
-  "Aracagy", "Calhau", "Renascença", "Cohama", "Turu",
-  "Ponta D'Areia", "São Francisco", "Olho D'Água", "Araçagy",
-  "Jardim Eldorado", "Altos do Calhau", "Outro",
+  "Altos do Calhau",
+  "Angelim",
+  "Araçagy",
+  "Aracagy",
+  "Bequimão",
+  "Calhau",
+  "Cidade Operária",
+  "Cohab",
+  "Cohama",
+  "Cohatrac",
+  "Forquilha",
+  "Ipase",
+  "Jardim Eldorado",
+  "Jardim São Cristóvão",
+  "Maiobão",
+  "Monte Castelo",
+  "Olho D'Água",
+  "Ponta D'Areia",
+  "Recanto dos Vinhais",
+  "Renascença",
+  "Sacavém",
+  "Santa Cruz",
+  "São Francisco",
+  "Turu",
+  "Vinhais",
+  "Outro",
 ];
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
@@ -56,7 +79,7 @@ const RequestForm = () => {
     setLoading(true);
 
     const budgetNum = formData.orcamento
-      ? parseFloat(formData.orcamento.replace(/\./g, "").replace(",", "."))
+      ? parseFloat(formData.orcamento.replace(/[R$\s.]/g, "").replace(",", "."))
       : null;
 
     const minAreaNum = formData.metragem_minima
@@ -141,11 +164,11 @@ const RequestForm = () => {
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="casa">Casa</SelectItem>
                     <SelectItem value="apartamento">Apartamento</SelectItem>
+                    <SelectItem value="casa">Casa</SelectItem>
                     <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
-                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
                     <SelectItem value="comercial">Comercial</SelectItem>
+                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -205,11 +228,17 @@ const RequestForm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">Orçamento máximo (R$)</label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Orçamento máximo</label>
                 <Input
-                  placeholder="Ex: 500.000"
+                  placeholder="R$ 0,00"
                   value={formData.orcamento}
-                  onChange={(e) => setFormData({ ...formData, orcamento: e.target.value })}
+                  onChange={(e) => {
+                    let raw = e.target.value.replace(/[^\d]/g, "");
+                    if (!raw) { setFormData({ ...formData, orcamento: "" }); return; }
+                    const cents = parseInt(raw);
+                    const formatted = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
+                    setFormData({ ...formData, orcamento: formatted });
+                  }}
                 />
               </div>
 
@@ -229,7 +258,8 @@ const RequestForm = () => {
                   <Input
                     placeholder="Nome completo"
                     value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    maxLength={40}
+                    onChange={(e) => setFormData({ ...formData, nome: e.target.value.slice(0, 40) })}
                     required
                   />
                   <label className="flex items-center gap-2 mt-2 cursor-pointer">
@@ -245,7 +275,13 @@ const RequestForm = () => {
                   <Input
                     placeholder="(98) 99999-9999"
                     value={formData.telefone}
-                    onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                    onChange={(e) => {
+                      let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+                      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+                      else if (v.length > 0) v = `(${v}`;
+                      setFormData({ ...formData, telefone: v });
+                    }}
                     required
                   />
                   <label className="flex items-center gap-2 mt-2 cursor-pointer">
