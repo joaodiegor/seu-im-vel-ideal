@@ -208,8 +208,13 @@ const RequestForm = () => {
                 <label className="block text-sm font-medium text-foreground mb-1.5">Área mínima do imóvel (m²)</label>
                 <Input
                   placeholder="Ex: 120"
+                  type="text"
+                  inputMode="numeric"
                   value={formData.metragem_minima}
-                  onChange={(e) => setFormData({ ...formData, metragem_minima: e.target.value })}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "");
+                    setFormData({ ...formData, metragem_minima: v });
+                  }}
                 />
               </div>
 
