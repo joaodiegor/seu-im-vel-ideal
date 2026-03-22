@@ -164,11 +164,11 @@ const RequestForm = () => {
                     <SelectValue placeholder="Selecione" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="casa">Casa</SelectItem>
                     <SelectItem value="apartamento">Apartamento</SelectItem>
+                    <SelectItem value="casa">Casa</SelectItem>
                     <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
-                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
                     <SelectItem value="comercial">Comercial</SelectItem>
+                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
