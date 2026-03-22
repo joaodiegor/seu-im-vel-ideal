@@ -228,11 +228,17 @@ const RequestForm = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1.5">Orçamento máximo (R$)</label>
+                <label className="block text-sm font-medium text-foreground mb-1.5">Orçamento máximo</label>
                 <Input
-                  placeholder="Ex: 500.000"
+                  placeholder="R$ 0,00"
                   value={formData.orcamento}
-                  onChange={(e) => setFormData({ ...formData, orcamento: e.target.value })}
+                  onChange={(e) => {
+                    let raw = e.target.value.replace(/[^\d]/g, "");
+                    if (!raw) { setFormData({ ...formData, orcamento: "" }); return; }
+                    const cents = parseInt(raw);
+                    const formatted = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
+                    setFormData({ ...formData, orcamento: formatted });
+                  }}
                 />
               </div>
 
