@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Home, MapPin, DollarSign, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,6 +33,8 @@ const RequestForm = () => {
     detalhes: "",
     nome: "",
     telefone: "",
+    nome_visivel: true,
+    telefone_visivel: true,
   });
 
   const showQuartosBanheiros = tiposComQuartos.includes(formData.tipo);
@@ -71,6 +74,8 @@ const RequestForm = () => {
       details: formData.detalhes || null,
       requester_name: formData.nome,
       requester_phone: formData.telefone,
+      name_visible: formData.nome_visivel,
+      phone_visible: formData.telefone_visivel,
     });
 
     setLoading(false);
@@ -82,7 +87,7 @@ const RequestForm = () => {
     }
 
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
-    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "" });
+    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
   };
 
   return (
@@ -227,6 +232,13 @@ const RequestForm = () => {
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                     required
                   />
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                    <Checkbox
+                      checked={formData.nome_visivel}
+                      onCheckedChange={(checked) => setFormData({ ...formData, nome_visivel: !!checked })}
+                    />
+                    <span className="text-xs text-muted-foreground">Visível para corretores</span>
+                  </label>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">WhatsApp *</label>
@@ -236,6 +248,13 @@ const RequestForm = () => {
                     onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                     required
                   />
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                    <Checkbox
+                      checked={formData.telefone_visivel}
+                      onCheckedChange={(checked) => setFormData({ ...formData, telefone_visivel: !!checked })}
+                    />
+                    <span className="text-xs text-muted-foreground">Visível para corretores</span>
+                  </label>
                 </div>
               </div>
 

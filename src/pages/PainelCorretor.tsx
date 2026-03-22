@@ -24,6 +24,7 @@ interface PropertyRequest {
   max_budget: number | null;
   details: string | null;
   requester_name: string;
+  name_visible: boolean;
   created_at: string;
 }
 
@@ -113,7 +114,7 @@ const PainelCorretor = () => {
     const [requestsRes, proposalsRes] = await Promise.all([
       supabase
         .from("property_requests")
-        .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, created_at")
+        .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, name_visible, created_at")
         .eq("status", "active")
         .order("created_at", { ascending: false }),
       supabase
@@ -145,6 +146,7 @@ const PainelCorretor = () => {
       property_type: proposal.request.property_type,
       neighborhood: proposal.request.neighborhood,
       requester_name: proposal.request.requester_name,
+      name_visible: true,
       bedrooms: null,
       max_budget: null,
       details: null,
@@ -269,9 +271,9 @@ const PainelCorretor = () => {
                       )}
                     </div>
                     <div className="pt-3 border-t border-border/50 space-y-3">
-                      <span className="text-xs text-muted-foreground">
-                        Publicado por <span className="font-medium text-foreground">{req.requester_name}</span>
-                      </span>
+                       <span className="text-xs text-muted-foreground">
+                         Publicado por <span className="font-medium text-foreground">{req.name_visible ? req.requester_name : "Nome oculto"}</span>
+                       </span>
                       {alreadySent ? (
                         <Button variant="outline" size="sm" className="w-full" disabled>
                           <CheckCircle className="h-4 w-4 mr-2 text-green-600" />

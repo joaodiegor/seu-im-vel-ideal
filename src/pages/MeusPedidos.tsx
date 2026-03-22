@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import {
   Home, MapPin, DollarSign, BedDouble, Clock, MessageSquare, User,
   ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2, Star,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Eye, EyeOff
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -55,6 +55,8 @@ interface MyRequest {
   details: string | null;
   status: string;
   created_at: string;
+  name_visible: boolean;
+  phone_visible: boolean;
   proposals: Proposal[];
 }
 
@@ -291,6 +293,16 @@ const MeusPedidos = () => {
     setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status: "active" } : req));
   };
 
+  const handleToggleVisibility = async (requestId: string, field: "name_visible" | "phone_visible", currentValue: boolean) => {
+    const { error } = await supabase
+      .from("property_requests")
+      .update({ [field]: !currentValue })
+      .eq("id", requestId);
+    if (error) { toast.error("Erro ao atualizar visibilidade."); return; }
+    setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, [field]: !currentValue } : req));
+    toast.success(!currentValue ? "Dado agora visível para corretores." : "Dado oculto para corretores.");
+  };
+
   const handleSubmitReview = async () => {
     if (!reviewTarget || reviewRating === 0) {
       toast.error("Selecione uma nota de 1 a 5 estrelas.");
@@ -418,6 +430,28 @@ const MeusPedidos = () => {
                       </div>
 
                       {req.details && <p className="text-sm text-muted-foreground mt-3">{req.details}</p>}
+
+                      {/* Visibility toggles */}
+                      <div className="flex flex-wrap gap-2 mt-3">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-7 px-2"
+                          onClick={() => handleToggleVisibility(req.id, "name_visible", req.name_visible)}
+                        >
+                          {req.name_visible ? <Eye className="h-3 w-3 mr-1" /> : <EyeOff className="h-3 w-3 mr-1" />}
+                          Nome {req.name_visible ? "visível" : "oculto"}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-xs h-7 px-2"
+                          onClick={() => handleToggleVisibility(req.id, "phone_visible", req.phone_visible)}
+                        >
+                          {req.phone_visible ? <Eye className="h-3 w-3 mr-1" /> : <EyeOff className="h-3 w-3 mr-1" />}
+                          WhatsApp {req.phone_visible ? "visível" : "oculto"}
+                        </Button>
+                      </div>
 
                       <div className="flex items-center gap-3 mt-4">
                         <Button

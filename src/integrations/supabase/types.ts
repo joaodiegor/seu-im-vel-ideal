@@ -144,7 +144,9 @@ export type Database = {
           id: string
           max_budget: number | null
           min_area: number | null
+          name_visible: boolean
           neighborhood: string
+          phone_visible: boolean
           property_type: string
           requester_name: string
           requester_phone: string
@@ -160,7 +162,9 @@ export type Database = {
           id?: string
           max_budget?: number | null
           min_area?: number | null
+          name_visible?: boolean
           neighborhood: string
+          phone_visible?: boolean
           property_type: string
           requester_name: string
           requester_phone: string
@@ -176,7 +180,9 @@ export type Database = {
           id?: string
           max_budget?: number | null
           min_area?: number | null
+          name_visible?: boolean
           neighborhood?: string
+          phone_visible?: boolean
           property_type?: string
           requester_name?: string
           requester_phone?: string
