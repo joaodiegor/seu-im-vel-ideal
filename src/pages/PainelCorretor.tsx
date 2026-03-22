@@ -114,7 +114,7 @@ const PainelCorretor = () => {
     const [requestsRes, proposalsRes] = await Promise.all([
       supabase
         .from("property_requests")
-        .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, created_at")
+        .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, name_visible, created_at")
         .eq("status", "active")
         .order("created_at", { ascending: false }),
       supabase
