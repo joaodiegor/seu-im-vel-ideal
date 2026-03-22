@@ -293,6 +293,16 @@ const MeusPedidos = () => {
     setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status: "active" } : req));
   };
 
+  const handleToggleVisibility = async (requestId: string, field: "name_visible" | "phone_visible", currentValue: boolean) => {
+    const { error } = await supabase
+      .from("property_requests")
+      .update({ [field]: !currentValue })
+      .eq("id", requestId);
+    if (error) { toast.error("Erro ao atualizar visibilidade."); return; }
+    setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, [field]: !currentValue } : req));
+    toast.success(!currentValue ? "Dado agora visível para corretores." : "Dado oculto para corretores.");
+  };
+
   const handleSubmitReview = async () => {
     if (!reviewTarget || reviewRating === 0) {
       toast.error("Selecione uma nota de 1 a 5 estrelas.");
