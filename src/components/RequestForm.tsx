@@ -12,9 +12,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
 const bairros = [
-  "Aracagy", "Calhau", "Renascença", "Cohama", "Turu",
-  "Ponta D'Areia", "São Francisco", "Olho D'Água", "Araçagy",
-  "Jardim Eldorado", "Altos do Calhau", "Outro",
+  "Altos do Calhau",
+  "Angelim",
+  "Araçagy",
+  "Aracagy",
+  "Bequimão",
+  "Calhau",
+  "Cidade Operária",
+  "Cohab",
+  "Cohama",
+  "Cohatrac",
+  "Forquilha",
+  "Ipase",
+  "Jardim Eldorado",
+  "Jardim São Cristóvão",
+  "Maiobão",
+  "Monte Castelo",
+  "Olho D'Água",
+  "Ponta D'Areia",
+  "Recanto dos Vinhais",
+  "Renascença",
+  "Sacavém",
+  "Santa Cruz",
+  "São Francisco",
+  "Turu",
+  "Vinhais",
+  "Outro",
 ];
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
