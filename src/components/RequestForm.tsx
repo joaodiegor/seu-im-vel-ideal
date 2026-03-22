@@ -232,6 +232,13 @@ const RequestForm = () => {
                     onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
                     required
                   />
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                    <Checkbox
+                      checked={formData.nome_visivel}
+                      onCheckedChange={(checked) => setFormData({ ...formData, nome_visivel: !!checked })}
+                    />
+                    <span className="text-xs text-muted-foreground">Visível para corretores</span>
+                  </label>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">WhatsApp *</label>
@@ -241,6 +248,13 @@ const RequestForm = () => {
                     onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
                     required
                   />
+                  <label className="flex items-center gap-2 mt-2 cursor-pointer">
+                    <Checkbox
+                      checked={formData.telefone_visivel}
+                      onCheckedChange={(checked) => setFormData({ ...formData, telefone_visivel: !!checked })}
+                    />
+                    <span className="text-xs text-muted-foreground">Visível para corretores</span>
+                  </label>
                 </div>
               </div>
 
