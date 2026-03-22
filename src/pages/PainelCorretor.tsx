@@ -270,9 +270,9 @@ const PainelCorretor = () => {
                       )}
                     </div>
                     <div className="pt-3 border-t border-border/50 space-y-3">
-                      <span className="text-xs text-muted-foreground">
-                        Publicado por <span className="font-medium text-foreground">{req.requester_name}</span>
-                      </span>
+                       <span className="text-xs text-muted-foreground">
+                         Publicado por <span className="font-medium text-foreground">{req.name_visible ? req.requester_name : "Nome oculto"}</span>
+                       </span>
                       {alreadySent ? (
                         <Button variant="outline" size="sm" className="w-full" disabled>
                           <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
