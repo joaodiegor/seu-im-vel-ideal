@@ -74,6 +74,8 @@ const RequestForm = () => {
       details: formData.detalhes || null,
       requester_name: formData.nome,
       requester_phone: formData.telefone,
+      name_visible: formData.nome_visivel,
+      phone_visible: formData.telefone_visivel,
     });
 
     setLoading(false);
