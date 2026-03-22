@@ -258,7 +258,8 @@ const RequestForm = () => {
                   <Input
                     placeholder="Nome completo"
                     value={formData.nome}
-                    onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
+                    maxLength={40}
+                    onChange={(e) => setFormData({ ...formData, nome: e.target.value.slice(0, 40) })}
                     required
                   />
                   <label className="flex items-center gap-2 mt-2 cursor-pointer">
