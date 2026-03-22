@@ -146,6 +146,7 @@ const PainelCorretor = () => {
       property_type: proposal.request.property_type,
       neighborhood: proposal.request.neighborhood,
       requester_name: proposal.request.requester_name,
+      name_visible: true,
       bedrooms: null,
       max_budget: null,
       details: null,
