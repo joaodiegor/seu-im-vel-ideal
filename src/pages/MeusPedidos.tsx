@@ -55,6 +55,8 @@ interface MyRequest {
   details: string | null;
   status: string;
   created_at: string;
+  name_visible: boolean;
+  phone_visible: boolean;
   proposals: Proposal[];
 }
 
