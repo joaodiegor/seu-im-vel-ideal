@@ -79,7 +79,7 @@ const RequestForm = () => {
     setLoading(true);
 
     const budgetNum = formData.orcamento
-      ? parseFloat(formData.orcamento.replace(/\./g, "").replace(",", "."))
+      ? parseFloat(formData.orcamento.replace(/[R$\s.]/g, "").replace(",", "."))
       : null;
 
     const minAreaNum = formData.metragem_minima
