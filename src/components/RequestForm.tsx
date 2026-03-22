@@ -275,7 +275,13 @@ const RequestForm = () => {
                   <Input
                     placeholder="(98) 99999-9999"
                     value={formData.telefone}
-                    onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+                    onChange={(e) => {
+                      let v = e.target.value.replace(/\D/g, "").slice(0, 11);
+                      if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+                      else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+                      else if (v.length > 0) v = `(${v}`;
+                      setFormData({ ...formData, telefone: v });
+                    }}
                     required
                   />
                   <label className="flex items-center gap-2 mt-2 cursor-pointer">
