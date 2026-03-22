@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Home, MapPin, DollarSign, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -32,6 +33,8 @@ const RequestForm = () => {
     detalhes: "",
     nome: "",
     telefone: "",
+    nome_visivel: true,
+    telefone_visivel: true,
   });
 
   const showQuartosBanheiros = tiposComQuartos.includes(formData.tipo);
