@@ -24,6 +24,7 @@ interface PropertyRequest {
   max_budget: number | null;
   details: string | null;
   requester_name: string;
+  name_visible: boolean;
   created_at: string;
 }
 
