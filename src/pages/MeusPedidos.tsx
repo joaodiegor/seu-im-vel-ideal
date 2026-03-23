@@ -478,16 +478,20 @@ const MeusPedidos = () => {
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Encerrar este pedido?</AlertDialogTitle>
+                                <AlertDialogTitle>Excluir este pedido?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  O pedido não ficará mais visível para corretores. Você poderá reabrir depois.
+                                  Esta ação é permanente. O pedido e todas as propostas associadas serão removidos.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleCloseRequest(req.id)} disabled={actionLoading === req.id}>
+                                <AlertDialogAction
+                                  onClick={() => handleCloseRequest(req.id)}
+                                  disabled={actionLoading === req.id}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
                                   {actionLoading === req.id && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                                  Encerrar
+                                  Excluir
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
