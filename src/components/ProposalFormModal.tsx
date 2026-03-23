@@ -157,8 +157,8 @@ const ProposalFormModal = ({
   };
 
   const handleSubmit = async () => {
-    if (!message.trim() || !link.trim() || !price.trim() || !phone.trim()) {
-      toast.error("Preencha todos os campos antes de enviar.");
+    if (!message.trim() || !price.trim() || !phone.trim()) {
+      toast.error("Preencha todos os campos obrigatórios antes de enviar.");
       return;
     }
 
@@ -276,7 +276,7 @@ const ProposalFormModal = ({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground mb-1.5">Link do imóvel *</label>
+            <label className="block text-sm font-medium text-foreground mb-1.5">Link do imóvel</label>
             <div className="relative">
               <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
@@ -352,7 +352,7 @@ const ProposalFormModal = ({
             variant="hero"
             className="w-full"
             onClick={handleSubmit}
-            disabled={submitting || !message.trim() || !link.trim() || !price.trim() || !phone.trim()}
+            disabled={submitting || !message.trim() || !price.trim() || !phone.trim()}
           >
             {submitting ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
