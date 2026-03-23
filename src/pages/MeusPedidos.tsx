@@ -471,9 +471,9 @@ const MeusPedidos = () => {
                         {isActive ? (
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="sm" className="shrink-0">
+                              <Button variant="outline" size="sm" className="shrink-0 text-destructive hover:text-destructive">
                                 <Archive className="h-4 w-4 mr-1.5" />
-                                Encerrar
+                                Excluir
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
