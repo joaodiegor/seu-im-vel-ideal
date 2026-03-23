@@ -57,6 +57,20 @@ const ProposalFormModal = ({
   const [price, setPrice] = useState("");
   const [link, setLink] = useState("");
   const [phone, setPhone] = useState("");
+
+  const formatCurrency = (value: string) => {
+    const nums = value.replace(/\D/g, "");
+    if (!nums) return "";
+    const amount = parseInt(nums, 10) / 100;
+    return amount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const formatPhone = (value: string) => {
+    const nums = value.replace(/\D/g, "").slice(0, 11);
+    if (nums.length <= 2) return nums.length ? `(${nums}` : "";
+    if (nums.length <= 7) return `(${nums.slice(0, 2)}) ${nums.slice(2)}`;
+    return `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7)}`;
+  };
   const [images, setImages] = useState<ProposalImage[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
