@@ -284,9 +284,10 @@ const ProposalFormModal = ({
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$) *</label>
             <Input
-              placeholder="Ex: 450.000"
+              placeholder="R$ 0,00"
+              inputMode="numeric"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) => setPrice(formatCurrency(e.target.value))}
             />
           </div>
           <div>
@@ -304,9 +305,10 @@ const ProposalFormModal = ({
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Telefone para contato *</label>
             <Input
-              placeholder="(11) 99999-9999"
+              placeholder="(98) 99999-9999"
+              inputMode="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => setPhone(formatPhone(e.target.value))}
             />
           </div>
 
