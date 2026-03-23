@@ -352,7 +352,7 @@ const ProposalFormModal = ({
             variant="hero"
             className="w-full"
             onClick={handleSubmit}
-            disabled={submitting || !message.trim() || !link.trim() || !price.trim() || !phone.trim()}
+            disabled={submitting || !message.trim() || !price.trim() || !phone.trim()}
           >
             {submitting ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
