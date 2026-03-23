@@ -83,7 +83,7 @@ const ProposalFormModal = ({
       setMessage(editProposal.message || "");
       setPrice(editProposal.price ? formatCurrency(String(Math.round(editProposal.price * 100))) : "");
       setLink(editProposal.property_link || "");
-      setPhone(editProposal.broker_phone || "");
+      setPhone(editProposal.broker_phone ? formatPhone(editProposal.broker_phone) : "");
       setRemovedImageIds([]);
       loadExistingImages(editProposal.id);
     } else if (open && !editProposal) {
