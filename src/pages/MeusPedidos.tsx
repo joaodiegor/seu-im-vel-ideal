@@ -277,11 +277,12 @@ const MeusPedidos = () => {
 
   const handleCloseRequest = async (requestId: string) => {
     setActionLoading(requestId);
-    const { error } = await supabase.from("property_requests").update({ status: "closed" }).eq("id", requestId);
+    const { error } = await supabase.from("property_requests").delete().eq("id", requestId);
     setActionLoading(null);
-    if (error) { toast.error("Erro ao encerrar pedido."); return; }
-    toast.success("Pedido encerrado com sucesso!");
-    setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status: "closed" } : req));
+    if (error) { toast.error("Erro ao excluir pedido."); return; }
+    toast.success("Pedido excluído com sucesso!");
+    setMyRequests((prev) => prev.filter((req) => req.id !== requestId));
+    if (expandedId === requestId) setExpandedId(null);
   };
 
   const handleReopenRequest = async (requestId: string) => {
@@ -470,23 +471,27 @@ const MeusPedidos = () => {
                         {isActive ? (
                           <AlertDialog>
                             <AlertDialogTrigger asChild>
-                              <Button variant="outline" size="sm" className="shrink-0">
+                              <Button variant="outline" size="sm" className="shrink-0 text-destructive hover:text-destructive">
                                 <Archive className="h-4 w-4 mr-1.5" />
-                                Encerrar
+                                Excluir
                               </Button>
                             </AlertDialogTrigger>
                             <AlertDialogContent>
                               <AlertDialogHeader>
-                                <AlertDialogTitle>Encerrar este pedido?</AlertDialogTitle>
+                                <AlertDialogTitle>Excluir este pedido?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                  O pedido não ficará mais visível para corretores. Você poderá reabrir depois.
+                                  Esta ação é permanente. O pedido e todas as propostas associadas serão removidos.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                                 <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleCloseRequest(req.id)} disabled={actionLoading === req.id}>
+                                <AlertDialogAction
+                                  onClick={() => handleCloseRequest(req.id)}
+                                  disabled={actionLoading === req.id}
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                >
                                   {actionLoading === req.id && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
-                                  Encerrar
+                                  Excluir
                                 </AlertDialogAction>
                               </AlertDialogFooter>
                             </AlertDialogContent>
