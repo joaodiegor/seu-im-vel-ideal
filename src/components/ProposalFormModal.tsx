@@ -178,7 +178,7 @@ const ProposalFormModal = ({
 
     setSubmitting(true);
 
-    const priceNum = parseFloat(price.replace(/\./g, "").replace(",", "."));
+    const priceNum = parseInt(price.replace(/\D/g, ""), 10) / 100;
 
     try {
       if (isEditing && editProposal) {
