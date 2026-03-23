@@ -157,8 +157,8 @@ const ProposalFormModal = ({
   };
 
   const handleSubmit = async () => {
-    if (!message.trim() || !link.trim() || !price.trim() || !phone.trim()) {
-      toast.error("Preencha todos os campos antes de enviar.");
+    if (!message.trim() || !price.trim() || !phone.trim()) {
+      toast.error("Preencha todos os campos obrigatórios antes de enviar.");
       return;
     }
 
