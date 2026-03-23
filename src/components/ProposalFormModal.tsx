@@ -57,6 +57,20 @@ const ProposalFormModal = ({
   const [price, setPrice] = useState("");
   const [link, setLink] = useState("");
   const [phone, setPhone] = useState("");
+
+  const formatCurrency = (value: string) => {
+    const nums = value.replace(/\D/g, "");
+    if (!nums) return "";
+    const amount = parseInt(nums, 10) / 100;
+    return amount.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
+  const formatPhone = (value: string) => {
+    const nums = value.replace(/\D/g, "").slice(0, 11);
+    if (nums.length <= 2) return nums.length ? `(${nums}` : "";
+    if (nums.length <= 7) return `(${nums.slice(0, 2)}) ${nums.slice(2)}`;
+    return `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7)}`;
+  };
   const [images, setImages] = useState<ProposalImage[]>([]);
   const [removedImageIds, setRemovedImageIds] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -67,9 +81,9 @@ const ProposalFormModal = ({
   useEffect(() => {
     if (open && editProposal) {
       setMessage(editProposal.message || "");
-      setPrice(editProposal.price ? String(editProposal.price) : "");
+      setPrice(editProposal.price ? formatCurrency(String(Math.round(editProposal.price * 100))) : "");
       setLink(editProposal.property_link || "");
-      setPhone(editProposal.broker_phone || "");
+      setPhone(editProposal.broker_phone ? formatPhone(editProposal.broker_phone) : "");
       setRemovedImageIds([]);
       loadExistingImages(editProposal.id);
     } else if (open && !editProposal) {
@@ -164,7 +178,7 @@ const ProposalFormModal = ({
 
     setSubmitting(true);
 
-    const priceNum = parseFloat(price.replace(/\./g, "").replace(",", "."));
+    const priceNum = parseInt(price.replace(/\D/g, ""), 10) / 100;
 
     try {
       if (isEditing && editProposal) {
@@ -270,9 +284,10 @@ const ProposalFormModal = ({
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Valor sugerido (R$) *</label>
             <Input
-              placeholder="Ex: 450.000"
+              placeholder="R$ 0,00"
+              inputMode="numeric"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) => setPrice(formatCurrency(e.target.value))}
             />
           </div>
           <div>
@@ -290,9 +305,10 @@ const ProposalFormModal = ({
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">Telefone para contato *</label>
             <Input
-              placeholder="(11) 99999-9999"
+              placeholder="(98) 99999-9999"
+              inputMode="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => setPhone(formatPhone(e.target.value))}
             />
           </div>
 
