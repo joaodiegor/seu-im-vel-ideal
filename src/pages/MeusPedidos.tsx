@@ -277,11 +277,12 @@ const MeusPedidos = () => {
 
   const handleCloseRequest = async (requestId: string) => {
     setActionLoading(requestId);
-    const { error } = await supabase.from("property_requests").update({ status: "closed" }).eq("id", requestId);
+    const { error } = await supabase.from("property_requests").delete().eq("id", requestId);
     setActionLoading(null);
-    if (error) { toast.error("Erro ao encerrar pedido."); return; }
-    toast.success("Pedido encerrado com sucesso!");
-    setMyRequests((prev) => prev.map((req) => req.id === requestId ? { ...req, status: "closed" } : req));
+    if (error) { toast.error("Erro ao excluir pedido."); return; }
+    toast.success("Pedido excluído com sucesso!");
+    setMyRequests((prev) => prev.filter((req) => req.id !== requestId));
+    if (expandedId === requestId) setExpandedId(null);
   };
 
   const handleReopenRequest = async (requestId: string) => {
