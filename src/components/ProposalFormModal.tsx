@@ -81,7 +81,7 @@ const ProposalFormModal = ({
   useEffect(() => {
     if (open && editProposal) {
       setMessage(editProposal.message || "");
-      setPrice(editProposal.price ? String(editProposal.price) : "");
+      setPrice(editProposal.price ? formatCurrency(String(Math.round(editProposal.price * 100))) : "");
       setLink(editProposal.property_link || "");
       setPhone(editProposal.broker_phone || "");
       setRemovedImageIds([]);
