@@ -61,12 +61,27 @@ const Auth = () => {
 
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { error, data: loginData } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
         });
         if (error) throw error;
         toast.success("Login realizado com sucesso!");
+
+        // Check if broker without avatar → redirect to profile
+        if (loginData.user) {
+          const { data: prof } = await supabase
+            .from("profiles")
+            .select("user_type, avatar_url")
+            .eq("user_id", loginData.user.id)
+            .maybeSingle();
+
+          if (prof?.user_type === "broker" && !prof.avatar_url) {
+            toast.info("Complete seu perfil adicionando sua foto!");
+            navigate("/perfil");
+            return;
+          }
+        }
         navigate("/");
       }
     } catch (error: any) {
