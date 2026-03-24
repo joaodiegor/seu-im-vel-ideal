@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -11,6 +11,17 @@ import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText } from "luc
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+
+const phoneMask = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+
+const creciMask = (value: string) => {
+  return value.replace(/[^a-zA-Z0-9\-\/]/g, "").slice(0, 20);
+};
 
 const Perfil = () => {
   const { user, profile, loading: authLoading } = useAuth();
@@ -118,6 +129,11 @@ const Perfil = () => {
   const handleSave = async () => {
     if (!user || !form.full_name.trim()) {
       toast.error("O nome é obrigatório.");
+      return;
+    }
+
+    if (userType === "broker" && !form.creci.trim()) {
+      toast.error("O CRECI é obrigatório para corretores.");
       return;
     }
 
@@ -264,8 +280,9 @@ const Perfil = () => {
                   </label>
                   <Input
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => setForm({ ...form, phone: phoneMask(e.target.value) })}
                     placeholder="(98) 99999-9999"
+                    maxLength={15}
                   />
                 </div>
 
@@ -274,12 +291,14 @@ const Perfil = () => {
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1.5">
                         <Award className="inline h-4 w-4 mr-1.5 text-primary" />
-                        CRECI
+                        CRECI *
                       </label>
                       <Input
                         value={form.creci}
-                        onChange={(e) => setForm({ ...form, creci: e.target.value })}
-                        placeholder="Número do CRECI"
+                        onChange={(e) => setForm({ ...form, creci: creciMask(e.target.value) })}
+                        placeholder="Ex: 12345-F ou CRECI/MA 12345"
+                        maxLength={20}
+                        required
                       />
                     </div>
 
