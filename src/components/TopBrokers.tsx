@@ -63,6 +63,7 @@ const BrokerCard = ({ broker }: { broker: BrokerWithStats }) => {
 
 const TopBrokers = () => {
   const [brokers, setBrokers] = useState<BrokerWithStats[]>([]);
+  const [recentBrokers, setRecentBrokers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -75,11 +76,12 @@ const TopBrokers = () => {
     // Get all broker profiles
     const { data: brokerProfiles } = await supabase
       .from("profiles")
-      .select("user_id, full_name, specialty, area, avatar_url")
+      .select("user_id, full_name, specialty, area, avatar_url, created_at")
       .eq("user_type", "broker");
 
     if (!brokerProfiles || brokerProfiles.length === 0) {
       setBrokers([]);
+      setRecentBrokers([]);
       setLoading(false);
       return;
     }
@@ -108,8 +110,15 @@ const TopBrokers = () => {
 
     // Sort by rating desc, then by review count desc
     enriched.sort((a, b) => b.avg_rating - a.avg_rating || b.review_count - a.review_count);
-
     setBrokers(enriched.slice(0, 6));
+
+    // Recent brokers with avatar
+    const withPhoto = brokerProfiles
+      .filter((b: any) => b.avatar_url)
+      .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 4);
+    setRecentBrokers(withPhoto);
+
     setLoading(false);
   };
 
