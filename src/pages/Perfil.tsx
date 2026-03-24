@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -11,6 +11,17 @@ import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText } from "luc
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+
+const phoneMask = (value: string) => {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+
+const creciMask = (value: string) => {
+  return value.replace(/[^a-zA-Z0-9\-\/]/g, "").slice(0, 20);
+};
 
 const Perfil = () => {
   const { user, profile, loading: authLoading } = useAuth();
