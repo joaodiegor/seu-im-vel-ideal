@@ -291,12 +291,14 @@ const Perfil = () => {
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1.5">
                         <Award className="inline h-4 w-4 mr-1.5 text-primary" />
-                        CRECI
+                        CRECI *
                       </label>
                       <Input
                         value={form.creci}
-                        onChange={(e) => setForm({ ...form, creci: e.target.value })}
-                        placeholder="Número do CRECI"
+                        onChange={(e) => setForm({ ...form, creci: creciMask(e.target.value) })}
+                        placeholder="Ex: 12345-F ou CRECI/MA 12345"
+                        maxLength={20}
+                        required
                       />
                     </div>
 
