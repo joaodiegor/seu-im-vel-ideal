@@ -29,7 +29,7 @@ const Navbar = () => {
           <a href="#como-funciona" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Como funciona
           </a>
-          <a href="#corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+          <a href="/corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Corretores
           </a>
           {user && isBroker && (
