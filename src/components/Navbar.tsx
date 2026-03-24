@@ -29,7 +29,7 @@ const Navbar = () => {
           <a href="#como-funciona" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Como funciona
           </a>
-          <a href="#corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+          <a href="/corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Corretores
           </a>
           {user && isBroker && (
@@ -105,7 +105,7 @@ const Navbar = () => {
       {open && (
         <div className="md:hidden bg-primary/95 backdrop-blur-md border-t border-primary-foreground/10 px-6 pb-4 space-y-3">
           <a href="#como-funciona" className="block text-sm text-primary-foreground/80 py-2">Como funciona</a>
-          <a href="#corretores" className="block text-sm text-primary-foreground/80 py-2">Corretores</a>
+          <a href="/corretores" className="block text-sm text-primary-foreground/80 py-2">Corretores</a>
           {user ? (
             <>
               {isBroker ? (
