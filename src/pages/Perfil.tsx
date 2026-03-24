@@ -132,6 +132,11 @@ const Perfil = () => {
       return;
     }
 
+    if (userType === "broker" && !form.creci.trim()) {
+      toast.error("O CRECI é obrigatório para corretores.");
+      return;
+    }
+
     setSaving(true);
 
     const { error } = await supabase
