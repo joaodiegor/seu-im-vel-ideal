@@ -280,8 +280,9 @@ const Perfil = () => {
                   </label>
                   <Input
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => setForm({ ...form, phone: phoneMask(e.target.value) })}
                     placeholder="(98) 99999-9999"
+                    maxLength={15}
                   />
                 </div>
 
