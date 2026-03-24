@@ -54,7 +54,14 @@ const Perfil = () => {
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file || !user) return;
+    if (!file) {
+      toast.error("Nenhum arquivo selecionado.");
+      return;
+    }
+    if (!user) {
+      toast.error("Você precisa estar logado.");
+      return;
+    }
 
     if (file.size > 2 * 1024 * 1024) {
       toast.error("A imagem deve ter no máximo 2MB.");
@@ -62,39 +69,50 @@ const Perfil = () => {
     }
 
     setUploading(true);
-    const ext = file.name.split(".").pop();
-    const filePath = `${user.id}/avatar.${ext}`;
+    try {
+      const ext = file.name.split(".").pop();
+      const filePath = `${user.id}/avatar.${ext}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("avatars")
-      .upload(filePath, file, { upsert: true });
+      // Remove old file first to avoid conflicts
+      await supabase.storage.from("avatars").remove([filePath]);
 
-    if (uploadError) {
-      toast.error("Erro ao enviar foto.");
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        toast.error("Erro ao enviar foto: " + uploadError.message);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      const urlWithCache = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: urlWithCache })
+        .eq("user_id", user.id);
+
+      if (updateError) {
+        console.error("Profile update error:", updateError);
+        toast.error("Erro ao atualizar foto no perfil.");
+        return;
+      }
+
+      setAvatarUrl(urlWithCache);
+      toast.success("Foto atualizada!");
+    } catch (err) {
+      console.error("Avatar upload exception:", err);
+      toast.error("Erro inesperado ao enviar foto.");
+    } finally {
       setUploading(false);
-      return;
+      // Reset input so same file can be selected again
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from("avatars")
-      .getPublicUrl(filePath);
-
-    const urlWithCache = `${publicUrl}?t=${Date.now()}`;
-
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ avatar_url: urlWithCache })
-      .eq("user_id", user.id);
-
-    setUploading(false);
-
-    if (updateError) {
-      toast.error("Erro ao atualizar foto.");
-      return;
-    }
-
-    setAvatarUrl(urlWithCache);
-    toast.success("Foto atualizada!");
   };
 
   const handleSave = async () => {
