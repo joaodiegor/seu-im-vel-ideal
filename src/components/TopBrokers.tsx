@@ -178,6 +178,46 @@ const TopBrokers = () => {
             ))}
           </div>
         )}
+
+        {/* Recent brokers with photos */}
+        {!loading && recentBrokers.length > 0 && (
+          <motion.div
+            className="mt-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h3 className="text-xl font-bold text-foreground font-display text-center mb-8">
+              Novos corretores na plataforma
+            </h3>
+            <div className="flex justify-center gap-6 flex-wrap">
+              {recentBrokers.map((broker: any, i: number) => (
+                <motion.div
+                  key={broker.user_id}
+                  className="flex flex-col items-center gap-2"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.3, delay: i * 0.1 }}
+                >
+                  <div className="w-20 h-20 rounded-full overflow-hidden border-3 border-primary/30 shadow-card">
+                    <img src={broker.avatar_url} alt={broker.full_name} className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-sm font-semibold text-foreground text-center max-w-[100px] truncate">
+                    {broker.full_name}
+                  </span>
+                  {broker.area && (
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {broker.area}
+                    </span>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
       </div>
     </section>
   );
