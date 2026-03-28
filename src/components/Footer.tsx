@@ -7,7 +7,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/images/logo.png" alt="SLZ Imóveis" className="h-10 brightness-0 invert" />
+              <img src="/images/logo.png" alt="SLZ Imóveis" className="h-14 brightness-0 invert" />
             </div>
             <p className="text-background/60 text-sm leading-relaxed">
               A plataforma que inverte o jogo imobiliário em São Luís. Você diz o que quer, corretores competem para entregar.
