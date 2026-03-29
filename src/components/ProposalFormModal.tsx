@@ -216,6 +216,19 @@ const ProposalFormModal = ({
 
         toast.success("Proposta atualizada com sucesso!");
       } else {
+        // Check proposal limit before inserting
+        const { count } = await supabase
+          .from("proposals")
+          .select("id", { count: "exact", head: true })
+          .eq("request_id", requestId)
+          .in("status", ["pending", "accepted"]);
+
+        if ((count || 0) >= 20) {
+          toast.error("Este pedido já atingiu o limite de 20 propostas ativas.");
+          setSubmitting(false);
+          return;
+        }
+
         // Insert new proposal
         const { data: newProposal, error } = await supabase
           .from("proposals")
