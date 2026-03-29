@@ -7,26 +7,42 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/images/logo.png" alt="SLZ Imóveis" className="h-20 brightness-0 invert" />
+              <img src="/images/logo.png" alt="SLZ Imóveis" />
             </div>
             <p className="text-background/60 text-sm leading-relaxed">
-              A plataforma que inverte o jogo imobiliário em São Luís. Você diz o que quer, corretores competem para entregar.
+              A plataforma que inverte o jogo imobiliário em São Luís. Você diz o que quer, corretores competem para
+              entregar.
             </p>
           </div>
 
           <div>
             <h4 className="text-background font-semibold mb-4 font-display">Links</h4>
             <ul className="space-y-2 text-background/60 text-sm">
-              <li><a href="#como-funciona" className="hover:text-coral transition-colors">Como funciona</a></li>
-              <li><a href="#publicar" className="hover:text-coral transition-colors">Publicar pedido</a></li>
-              <li><a href="#corretores" className="hover:text-coral transition-colors">Corretores</a></li>
+              <li>
+                <a href="#como-funciona" className="hover:text-coral transition-colors">
+                  Como funciona
+                </a>
+              </li>
+              <li>
+                <a href="#publicar" className="hover:text-coral transition-colors">
+                  Publicar pedido
+                </a>
+              </li>
+              <li>
+                <a href="#corretores" className="hover:text-coral transition-colors">
+                  Corretores
+                </a>
+              </li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-background font-semibold mb-4 font-display">Contato</h4>
             <div className="space-y-3 text-background/60 text-sm">
-              <a href="mailto:contato@slzimoveis.com.br" className="flex items-center gap-2 hover:text-coral transition-colors">
+              <a
+                href="mailto:contato@slzimoveis.com.br"
+                className="flex items-center gap-2 hover:text-coral transition-colors"
+              >
                 <Mail className="h-4 w-4" /> contato@slzimoveis.com.br
               </a>
               <a href="#" className="flex items-center gap-2 hover:text-coral transition-colors">
