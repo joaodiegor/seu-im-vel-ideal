@@ -84,6 +84,7 @@ const PainelCorretor = () => {
   const navigate = useNavigate();
   const [requests, setRequests] = useState<PropertyRequest[]>([]);
   const [sentProposalIds, setSentProposalIds] = useState<Set<string>>(new Set());
+  const [proposalCounts, setProposalCounts] = useState<Record<string, number>>({});
   const [brokerProposals, setBrokerProposals] = useState<BrokerProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -124,7 +125,21 @@ const PainelCorretor = () => {
         .order("created_at", { ascending: false }),
     ]);
 
-    if (requestsRes.data) setRequests(requestsRes.data);
+    if (requestsRes.data) {
+      setRequests(requestsRes.data);
+      // Fetch active proposal counts for each request
+      const counts: Record<string, number> = {};
+      const countPromises = requestsRes.data.map(async (req) => {
+        const { count } = await supabase
+          .from("proposals")
+          .select("id", { count: "exact", head: true })
+          .eq("request_id", req.id)
+          .in("status", ["pending", "accepted"]);
+        counts[req.id] = count || 0;
+      });
+      await Promise.all(countPromises);
+      setProposalCounts(counts);
+    }
     if (proposalsRes.data) {
       const mapped = proposalsRes.data.map((p: any) => ({ ...p, request: p.property_requests }));
       setBrokerProposals(mapped);
@@ -232,6 +247,8 @@ const PainelCorretor = () => {
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filtered.map((req, i) => {
                 const alreadySent = sentProposalIds.has(req.id);
+                const count = proposalCounts[req.id] || 0;
+                const isFull = count >= 20;
                 return (
                   <motion.div
                     key={req.id}
@@ -271,13 +288,22 @@ const PainelCorretor = () => {
                       )}
                     </div>
                     <div className="pt-3 border-t border-border/50 space-y-3">
-                       <span className="text-xs text-muted-foreground">
-                         Publicado por <span className="font-medium text-foreground">{req.name_visible ? req.requester_name : "Nome oculto"}</span>
-                       </span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          Publicado por <span className="font-medium text-foreground">{req.name_visible ? req.requester_name : "Nome oculto"}</span>
+                        </span>
+                        <span className={`text-xs font-medium ${isFull ? "text-destructive" : "text-muted-foreground"}`}>
+                          {count}/20 propostas
+                        </span>
+                      </div>
                       {alreadySent ? (
                         <Button variant="outline" size="sm" className="w-full" disabled>
-                          <CheckCircle className="h-4 w-4 mr-2 text-green-600" />
+                          <CheckCircle className="h-4 w-4 mr-2 text-emerald-600" />
                           Proposta enviada
+                        </Button>
+                      ) : isFull ? (
+                        <Button variant="outline" size="sm" className="w-full" disabled>
+                          Limite de propostas atingido
                         </Button>
                       ) : (
                         <Button variant="hero" size="sm" className="w-full" onClick={() => openNewProposal(req)}>
