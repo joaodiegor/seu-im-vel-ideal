@@ -84,6 +84,7 @@ const PainelCorretor = () => {
   const navigate = useNavigate();
   const [requests, setRequests] = useState<PropertyRequest[]>([]);
   const [sentProposalIds, setSentProposalIds] = useState<Set<string>>(new Set());
+  const [proposalCounts, setProposalCounts] = useState<Record<string, number>>({});
   const [brokerProposals, setBrokerProposals] = useState<BrokerProposal[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
