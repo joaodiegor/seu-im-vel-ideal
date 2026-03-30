@@ -259,6 +259,28 @@ const ProposalFormModal = ({
         }
 
         toast.success("Proposta enviada com sucesso!");
+
+        // Notify buyer via push notification
+        try {
+          const { data: request } = await supabase
+            .from("property_requests")
+            .select("user_id")
+            .eq("id", requestId)
+            .single();
+
+          if (request?.user_id) {
+            await supabase.functions.invoke("send-push-notification", {
+              body: {
+                title: "Nova proposta recebida!",
+                body: `Você recebeu uma nova proposta para ${typeLabels[propertyType] || propertyType} em ${neighborhood}`,
+                url: "/meus-pedidos",
+                target_user_id: request.user_id,
+              },
+            });
+          }
+        } catch (e) {
+          console.error("Push notification error:", e);
+        }
       }
 
       onSuccess();
