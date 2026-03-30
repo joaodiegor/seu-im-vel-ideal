@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { isPushSupported, subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/pushNotifications";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
