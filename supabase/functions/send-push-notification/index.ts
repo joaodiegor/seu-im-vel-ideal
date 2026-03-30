@@ -5,7 +5,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Web Push utilities
 function base64UrlDecode(str: string): Uint8Array {
   const padding = "=".repeat((4 - (str.length % 4)) % 4);
   const base64 = (str + padding).replace(/-/g, "+").replace(/_/g, "/");
@@ -26,38 +25,27 @@ async function importVapidKeys(publicKeyB64: string, privateKeyB64: string) {
   const privateKeyBytes = base64UrlDecode(privateKeyB64);
 
   const publicKey = await crypto.subtle.importKey(
-    "raw",
-    publicKeyBytes,
-    { name: "ECDSA", namedCurve: "P-256" },
-    true,
-    []
+    "raw", publicKeyBytes, { name: "ECDSA", namedCurve: "P-256" }, true, []
   );
 
   const privateKey = await crypto.subtle.importKey(
     "jwk",
     {
-      kty: "EC",
-      crv: "P-256",
+      kty: "EC", crv: "P-256",
       x: base64UrlEncode(publicKeyBytes.slice(1, 33)),
       y: base64UrlEncode(publicKeyBytes.slice(33, 65)),
       d: base64UrlEncode(privateKeyBytes),
     },
-    { name: "ECDSA", namedCurve: "P-256" },
-    true,
-    ["sign"]
+    { name: "ECDSA", namedCurve: "P-256" }, true, ["sign"]
   );
 
   return { publicKey, privateKey, publicKeyBytes };
 }
 
 async function createVapidAuthHeader(
-  endpoint: string,
-  publicKeyB64: string,
-  privateKeyB64: string,
-  subject: string
+  endpoint: string, publicKeyB64: string, privateKeyB64: string, subject: string
 ) {
   const { privateKey, publicKeyBytes } = await importVapidKeys(publicKeyB64, privateKeyB64);
-
   const url = new URL(endpoint);
   const audience = `${url.protocol}//${url.host}`;
 
@@ -71,26 +59,21 @@ async function createVapidAuthHeader(
   const unsignedToken = `${headerB64}.${payloadB64}`;
 
   const signature = await crypto.subtle.sign(
-    { name: "ECDSA", hash: "SHA-256" },
-    privateKey,
-    encoder.encode(unsignedToken)
+    { name: "ECDSA", hash: "SHA-256" }, privateKey, encoder.encode(unsignedToken)
   );
 
-  // Convert DER signature to raw r||s
   const sigBytes = new Uint8Array(signature);
   let r: Uint8Array, s: Uint8Array;
   if (sigBytes.length === 64) {
     r = sigBytes.slice(0, 32);
     s = sigBytes.slice(32, 64);
   } else {
-    // DER format
     const rLen = sigBytes[3];
     const rStart = 4;
     r = sigBytes.slice(rStart, rStart + rLen);
     const sLen = sigBytes[rStart + rLen + 1];
     const sStart = rStart + rLen + 2;
     s = sigBytes.slice(sStart, sStart + sLen);
-    // Trim leading zeros and pad to 32
     if (r.length > 32) r = r.slice(r.length - 32);
     if (s.length > 32) s = s.slice(s.length - 32);
     if (r.length < 32) { const t = new Uint8Array(32); t.set(r, 32 - r.length); r = t; }
@@ -103,40 +86,22 @@ async function createVapidAuthHeader(
   const token = `${unsignedToken}.${base64UrlEncode(rawSig)}`;
   const pubKeyB64 = base64UrlEncode(publicKeyBytes);
 
-  return {
-    authorization: `vapid t=${token}, k=${pubKeyB64}`,
-  };
+  return { authorization: `vapid t=${token}, k=${pubKeyB64}` };
 }
 
 async function sendWebPush(
   subscription: { endpoint: string; p256dh: string; auth: string },
-  payload: string,
-  vapidPublicKey: string,
-  vapidPrivateKey: string,
-  vapidSubject: string
+  payload: string, vapidPublicKey: string, vapidPrivateKey: string, vapidSubject: string
 ) {
   const { authorization } = await createVapidAuthHeader(
-    subscription.endpoint,
-    vapidPublicKey,
-    vapidPrivateKey,
-    vapidSubject
+    subscription.endpoint, vapidPublicKey, vapidPrivateKey, vapidSubject
   );
 
-  // Encrypt payload using Web Push encryption (aes128gcm)
-  // For simplicity, we'll send without encryption using the TTL-only approach
-  // Actually, Web Push requires encryption. Let's use a simpler approach.
-  
-  const response = await fetch(subscription.endpoint, {
+  return await fetch(subscription.endpoint, {
     method: "POST",
-    headers: {
-      Authorization: authorization,
-      "Content-Type": "application/json",
-      TTL: "86400",
-    },
+    headers: { Authorization: authorization, "Content-Type": "application/json", TTL: "86400" },
     body: payload,
   });
-
-  return response;
 }
 
 Deno.serve(async (req) => {
@@ -153,41 +118,46 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { title, body, url } = await req.json();
+    const { title, body, url, target_user_id } = await req.json();
 
-    // Get all broker push subscriptions
-    const { data: subscriptions, error } = await supabase
-      .from("push_subscriptions")
-      .select("endpoint, p256dh, auth, user_id");
+    let targetSubs: any[] = [];
 
-    if (error) throw error;
+    if (target_user_id) {
+      // Send to a specific user
+      const { data: subs, error } = await supabase
+        .from("push_subscriptions")
+        .select("endpoint, p256dh, auth, user_id")
+        .eq("user_id", target_user_id);
+      if (error) throw error;
+      targetSubs = subs || [];
+    } else {
+      // Send to all brokers (original behavior)
+      const { data: subscriptions, error } = await supabase
+        .from("push_subscriptions")
+        .select("endpoint, p256dh, auth, user_id");
+      if (error) throw error;
 
-    // Filter only brokers
-    const { data: brokerProfiles } = await supabase
-      .from("profiles")
-      .select("user_id")
-      .eq("user_type", "broker");
+      const { data: brokerProfiles } = await supabase
+        .from("profiles")
+        .select("user_id")
+        .eq("user_type", "broker");
 
-    const brokerIds = new Set((brokerProfiles || []).map((p: any) => p.user_id));
-    const brokerSubs = (subscriptions || []).filter((s: any) => brokerIds.has(s.user_id));
+      const brokerIds = new Set((brokerProfiles || []).map((p: any) => p.user_id));
+      targetSubs = (subscriptions || []).filter((s: any) => brokerIds.has(s.user_id));
+    }
 
     const payload = JSON.stringify({ title, body, url });
     const results = { sent: 0, failed: 0, removed: 0 };
 
-    for (const sub of brokerSubs) {
+    for (const sub of targetSubs) {
       try {
         const res = await sendWebPush(
-          sub,
-          payload,
-          VAPID_PUBLIC_KEY,
-          VAPID_PRIVATE_KEY,
-          "mailto:contato@slzimoveis.com.br"
+          sub, payload, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, "mailto:contato@slzimoveis.com.br"
         );
 
         if (res.status === 201 || res.status === 200) {
           results.sent++;
         } else if (res.status === 404 || res.status === 410) {
-          // Subscription expired, remove it
           await supabase.from("push_subscriptions").delete().eq("endpoint", sub.endpoint);
           results.removed++;
         } else {
