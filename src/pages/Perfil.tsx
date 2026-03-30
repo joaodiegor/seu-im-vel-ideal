@@ -335,6 +335,42 @@ const Perfil = () => {
                   </>
                 )}
 
+                {/* Push Notification Toggle */}
+                {isPushSupported() && (
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/30">
+                    <div className="flex items-center gap-3">
+                      <Bell className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Notificações push</p>
+                        <p className="text-xs text-muted-foreground">
+                          {isBroker
+                            ? "Receba alertas quando novos pedidos forem publicados"
+                            : "Receba alertas sobre suas propostas"}
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={pushEnabled}
+                      disabled={pushLoading}
+                      onCheckedChange={async (checked) => {
+                        if (!user) return;
+                        setPushLoading(true);
+                        if (checked) {
+                          const ok = await subscribeToPush(user.id);
+                          setPushEnabled(ok);
+                          if (ok) toast.success("Notificações ativadas!");
+                          else toast.error("Não foi possível ativar as notificações. Verifique as permissões do navegador.");
+                        } else {
+                          await unsubscribeFromPush(user.id);
+                          setPushEnabled(false);
+                          toast.success("Notificações desativadas.");
+                        }
+                        setPushLoading(false);
+                      }}
+                    />
+                  </div>
+                )}
+
                 <div>
                   <label className="block text-sm font-medium text-foreground mb-1.5">
                     <FileText className="inline h-4 w-4 mr-1.5 text-primary" />
