@@ -33,6 +33,8 @@ const Perfil = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userType, setUserType] = useState<"buyer" | "broker">("buyer");
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
@@ -41,6 +43,10 @@ const Perfil = () => {
     specialty: "",
     creci: "",
   });
+
+  useEffect(() => {
+    isSubscribed().then(setPushEnabled);
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
