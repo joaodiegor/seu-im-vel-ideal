@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { isPushSupported, subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/pushNotifications";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -31,6 +33,8 @@ const Perfil = () => {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [userType, setUserType] = useState<"buyer" | "broker">("buyer");
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
   const [form, setForm] = useState({
     full_name: "",
     phone: "",
@@ -39,6 +43,10 @@ const Perfil = () => {
     specialty: "",
     creci: "",
   });
+
+  useEffect(() => {
+    isSubscribed().then(setPushEnabled);
+  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -325,6 +333,42 @@ const Perfil = () => {
                       />
                     </div>
                   </>
+                )}
+
+                {/* Push Notification Toggle */}
+                {isPushSupported() && (
+                  <div className="flex items-center justify-between p-4 rounded-xl border border-border/50 bg-muted/30">
+                    <div className="flex items-center gap-3">
+                      <Bell className="h-5 w-5 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Notificações push</p>
+                        <p className="text-xs text-muted-foreground">
+                          {isBroker
+                            ? "Receba alertas quando novos pedidos forem publicados"
+                            : "Receba alertas sobre suas propostas"}
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={pushEnabled}
+                      disabled={pushLoading}
+                      onCheckedChange={async (checked) => {
+                        if (!user) return;
+                        setPushLoading(true);
+                        if (checked) {
+                          const ok = await subscribeToPush(user.id);
+                          setPushEnabled(ok);
+                          if (ok) toast.success("Notificações ativadas!");
+                          else toast.error("Não foi possível ativar as notificações. Verifique as permissões do navegador.");
+                        } else {
+                          await unsubscribeFromPush(user.id);
+                          setPushEnabled(false);
+                          toast.success("Notificações desativadas.");
+                        }
+                        setPushLoading(false);
+                      }}
+                    />
+                  </div>
                 )}
 
                 <div>
