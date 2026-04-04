@@ -1,8 +1,19 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Hero = () => {
+  const [brokerCount, setBrokerCount] = useState<number>(0);
+
+  useEffect(() => {
+    supabase
+      .from("profiles")
+      .select("user_id", { count: "exact", head: true })
+      .eq("user_type", "broker")
+      .then(({ count }) => setBrokerCount(count ?? 0));
+  }, []);
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-hero">
       {/* Decorative pattern inspired by azulejos */}
