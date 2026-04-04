@@ -167,6 +167,18 @@ const AdminPanel = () => {
     }
   };
 
+  const deleteUser = async (userId: string) => {
+    const { data, error } = await supabase.functions.invoke("delete-user", {
+      body: { user_id: userId },
+    });
+    if (error || data?.error) {
+      toast.error(data?.error || "Erro ao excluir usuário");
+    } else {
+      toast.success("Usuário excluído com sucesso");
+      loadAllData();
+    }
+  };
+
   if (authLoading || checkingRole) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -269,6 +281,7 @@ const AdminPanel = () => {
                         <TableHead>Cidade</TableHead>
                         <TableHead>CRECI</TableHead>
                         <TableHead>Cadastro</TableHead>
+                        <TableHead>Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -295,6 +308,27 @@ const AdminPanel = () => {
                           <TableCell>{p.city || "—"}</TableCell>
                           <TableCell>{p.creci || "—"}</TableCell>
                           <TableCell>{formatDate(p.created_at)}</TableCell>
+                          <TableCell>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Isso excluirá permanentemente {p.full_name || "este usuário"} e todos os dados associados.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteUser(p.user_id)}>Excluir</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
