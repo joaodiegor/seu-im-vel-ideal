@@ -29,7 +29,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#corretores" className="hover:text-coral transition-colors">
+                <a href="/corretores" className="hover:text-coral transition-colors">
                   Corretores
                 </a>
               </li>
