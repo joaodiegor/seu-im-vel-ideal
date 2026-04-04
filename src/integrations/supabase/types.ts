@@ -316,6 +316,13 @@ export type Database = {
             foreignKeyName: "proposals_request_id_fkey"
             columns: ["request_id"]
             isOneToOne: false
+            referencedRelation: "active_requests_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
             referencedRelation: "property_requests"
             referencedColumns: ["id"]
           },
@@ -368,7 +375,63 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      active_requests_public: {
+        Row: {
+          bathrooms: number | null
+          bedrooms: number | null
+          created_at: string | null
+          details: string | null
+          id: string | null
+          max_budget: number | null
+          min_area: number | null
+          name_visible: boolean | null
+          neighborhood: string | null
+          phone_visible: boolean | null
+          property_type: string | null
+          requester_name: string | null
+          requester_phone: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string | null
+          details?: string | null
+          id?: string | null
+          max_budget?: number | null
+          min_area?: number | null
+          name_visible?: boolean | null
+          neighborhood?: string | null
+          phone_visible?: boolean | null
+          property_type?: string | null
+          requester_name?: never
+          requester_phone?: never
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          bathrooms?: number | null
+          bedrooms?: number | null
+          created_at?: string | null
+          details?: string | null
+          id?: string | null
+          max_budget?: number | null
+          min_area?: number | null
+          name_visible?: boolean | null
+          neighborhood?: string | null
+          phone_visible?: boolean | null
+          property_type?: string | null
+          requester_name?: never
+          requester_phone?: never
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_broker_stats: {

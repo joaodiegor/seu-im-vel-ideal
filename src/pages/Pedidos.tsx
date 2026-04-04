@@ -69,13 +69,12 @@ const Pedidos = () => {
   const fetchRequests = async () => {
     setLoading(true);
     const { data, error } = await supabase
-      .from("property_requests")
+      .from("active_requests_public" as any)
       .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, created_at")
-      .eq("status", "active")
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setRequests(data);
+      setRequests((data as unknown as PropertyRequest[]) || []);
     }
     setLoading(false);
   };
