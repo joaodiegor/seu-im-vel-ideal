@@ -11,6 +11,7 @@ import PainelCorretor from "./pages/PainelCorretor.tsx";
 import MeusPedidos from "./pages/MeusPedidos.tsx";
 import Perfil from "./pages/Perfil.tsx";
 import Corretores from "./pages/Corretores.tsx";
+import InstallPWA from "./components/InstallPWA.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
