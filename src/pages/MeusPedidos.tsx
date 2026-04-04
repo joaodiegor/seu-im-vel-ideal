@@ -119,8 +119,8 @@ const ImageCarousel = ({ images }: { images: ProposalImage[] }) => {
   const next = () => setCurrent((c) => (c === total - 1 ? 0 : c + 1));
 
   return (
-    <div className="mt-3 relative rounded-lg overflow-hidden border border-border/50 bg-secondary/20">
-      <div className="relative aspect-video">
+    <div className="mt-3 relative rounded-lg overflow-hidden border border-border/50 bg-secondary/20 max-w-sm">
+      <div className="relative aspect-[4/3]">
         <img
           src={images[current].image_url}
           alt={`Foto ${current + 1} de ${total}`}
@@ -153,7 +153,7 @@ const ImageCarousel = ({ images }: { images: ProposalImage[] }) => {
             <button
               key={img.id}
               onClick={() => setCurrent(i)}
-              className={`shrink-0 w-12 h-12 rounded-md overflow-hidden border-2 transition-colors ${
+              className={`shrink-0 w-10 h-10 rounded-md overflow-hidden border-2 transition-colors ${
                 i === current ? "border-primary" : "border-transparent hover:border-border"
               }`}
             >
