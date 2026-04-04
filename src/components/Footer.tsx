@@ -19,17 +19,17 @@ const Footer = () => {
             <h4 className="text-background font-semibold mb-4 font-display">Links</h4>
             <ul className="space-y-2 text-background/60 text-sm">
               <li>
-                <a href="#como-funciona" className="hover:text-coral transition-colors">
+                <a href="/#como-funciona" className="hover:text-coral transition-colors">
                   Como funciona
                 </a>
               </li>
               <li>
-                <a href="#publicar" className="hover:text-coral transition-colors">
+                <a href="/#publicar" className="hover:text-coral transition-colors">
                   Publicar pedido
                 </a>
               </li>
               <li>
-                <a href="#corretores" className="hover:text-coral transition-colors">
+                <a href="/corretores" className="hover:text-coral transition-colors">
                   Corretores
                 </a>
               </li>
