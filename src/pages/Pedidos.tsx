@@ -74,7 +74,7 @@ const Pedidos = () => {
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setRequests(data);
+      setRequests((data as unknown as PropertyRequest[]) || []);
     }
     setLoading(false);
   };
