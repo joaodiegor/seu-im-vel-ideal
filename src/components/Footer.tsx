@@ -1,4 +1,4 @@
-import { Home, Instagram, Mail } from "lucide-react";
+import { Instagram, Mail, ShieldAlert } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -52,8 +52,26 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-background/10 mt-12 pt-8 text-center text-background/40 text-sm">
-          © {new Date().getFullYear()} SLZ Imóveis. Todos os direitos reservados.
+        {/* Aviso Legal */}
+        <div className="border-t border-background/10 mt-12 pt-8">
+          <div className="flex items-start gap-3 mb-6 p-4 rounded-lg bg-background/5 border border-background/10">
+            <ShieldAlert className="h-5 w-5 text-coral mt-0.5 shrink-0" />
+            <div className="text-background/60 text-xs leading-relaxed space-y-2">
+              <p>
+                As propostas enviadas por corretores são de inteira responsabilidade dos próprios profissionais. A plataforma atua apenas como intermediadora de contato e não se responsabiliza pela veracidade, condições ou cumprimento das ofertas apresentadas.
+              </p>
+              <p>
+                Recomendamos que o comprador verifique atentamente todas as informações antes de qualquer negociação, incluindo a regularidade do corretor responsável. Para sua segurança, consulte o registro do corretor no site oficial do{" "}
+                <a href="https://www.crecima.gov.br/2025/10/14/buscar-por-corretor/" target="_blank" rel="noopener noreferrer" className="text-coral underline hover:text-coral/80 transition-colors">
+                  CRECI-MA
+                </a>.
+              </p>
+              <p>Ao utilizar a plataforma, você declara estar ciente e de acordo com essas condições.</p>
+            </div>
+          </div>
+          <p className="text-center text-background/40 text-sm">
+            © {new Date().getFullYear()} SLZ Imóveis. Todos os direitos reservados.
+          </p>
         </div>
       </div>
     </footer>
