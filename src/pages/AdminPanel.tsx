@@ -281,6 +281,7 @@ const AdminPanel = () => {
                         <TableHead>Cidade</TableHead>
                         <TableHead>CRECI</TableHead>
                         <TableHead>Cadastro</TableHead>
+                        <TableHead>Ações</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
