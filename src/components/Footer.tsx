@@ -24,7 +24,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#publicar" className="hover:text-coral transition-colors">
+                <a href="/#publicar" className="hover:text-coral transition-colors">
                   Publicar pedido
                 </a>
               </li>
