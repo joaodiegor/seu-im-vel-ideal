@@ -308,6 +308,27 @@ const AdminPanel = () => {
                           <TableCell>{p.city || "—"}</TableCell>
                           <TableCell>{p.creci || "—"}</TableCell>
                           <TableCell>{formatDate(p.created_at)}</TableCell>
+                          <TableCell>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Excluir usuário?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Isso excluirá permanentemente {p.full_name || "este usuário"} e todos os dados associados.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => deleteUser(p.user_id)}>Excluir</AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
