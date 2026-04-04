@@ -1,8 +1,19 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Search, ArrowRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Hero = () => {
+  const [brokerCount, setBrokerCount] = useState<number>(0);
+
+  useEffect(() => {
+    supabase
+      .from("profiles")
+      .select("user_id", { count: "exact", head: true })
+      .eq("user_type", "broker")
+      .then(({ count }) => setBrokerCount(count ?? 0));
+  }, []);
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-hero">
       {/* Decorative pattern inspired by azulejos */}
@@ -59,21 +70,15 @@ const Hero = () => {
             </Button>
           </motion.div>
 
-          <motion.div
-            className="mt-12 flex items-center gap-6 text-primary-foreground/60 text-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.5 }}>
-            
-            <div className="flex -space-x-2">
-              {[1, 2, 3, 4].map((i) =>
-              <div key={i} className="w-8 h-8 rounded-full bg-primary-foreground/20 border-2 border-primary flex items-center justify-center text-xs text-primary-foreground font-semibold">
-                  {String.fromCharCode(64 + i)}
-                </div>
-              )}
-            </div>
-            <span>+120 corretores já cadastrados</span>
-          </motion.div>
+          {brokerCount > 0 && (
+            <motion.div
+              className="mt-12 flex items-center gap-6 text-primary-foreground/60 text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.5 }}>
+              <span>+{brokerCount} corretores já cadastrados</span>
+            </motion.div>
+          )}
         </div>
       </div>
     </section>);
