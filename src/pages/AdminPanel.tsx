@@ -167,6 +167,18 @@ const AdminPanel = () => {
     }
   };
 
+  const deleteUser = async (userId: string) => {
+    const { data, error } = await supabase.functions.invoke("delete-user", {
+      body: { user_id: userId },
+    });
+    if (error || data?.error) {
+      toast.error(data?.error || "Erro ao excluir usuário");
+    } else {
+      toast.success("Usuário excluído com sucesso");
+      loadAllData();
+    }
+  };
+
   if (authLoading || checkingRole) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
