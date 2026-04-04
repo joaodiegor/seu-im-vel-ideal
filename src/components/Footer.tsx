@@ -1,4 +1,4 @@
-import { Home, Instagram, Mail } from "lucide-react";
+import { Instagram, Mail, ShieldAlert } from "lucide-react";
 
 const Footer = () => {
   return (
