@@ -25,7 +25,7 @@ const Navbar = () => {
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="#como-funciona" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+          <a href="/#como-funciona" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
             Como funciona
           </a>
           <a href="/corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
