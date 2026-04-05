@@ -40,10 +40,10 @@ const Footer = () => {
             <h4 className="text-background font-semibold mb-4 font-display">Contato</h4>
             <div className="space-y-3 text-background/60 text-sm">
               <a
-                href="mailto:contato@slzimoveis.com.br"
+                href="mailto:adminslzimoveis@gmail.com"
                 className="flex items-center gap-2 hover:text-coral transition-colors"
               >
-                <Mail className="h-4 w-4" /> contato@slzimoveis.com.br
+                <Mail className="h-4 w-4" /> adminslzimoveis@gmail.com
               </a>
               <a href="#" className="flex items-center gap-2 hover:text-coral transition-colors">
                 <Instagram className="h-4 w-4" /> @slzimoveis
