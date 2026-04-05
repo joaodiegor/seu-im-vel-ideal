@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ProposalChat from "@/components/ProposalChat";
 import ProposalFormModal from "@/components/ProposalFormModal";
+import DirectChat from "@/components/DirectChat";
 
 interface PropertyRequest {
   id: string;
