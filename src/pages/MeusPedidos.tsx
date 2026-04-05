@@ -560,7 +560,7 @@ const MeusPedidos = () => {
                                   <div className="flex flex-wrap gap-3 mt-3">
                                     {proposal.price && (
                                       <Badge variant="outline" className="text-sm">
-                                        <DollarSign className="h-3 w-3 mr-1" />{formatCurrency(proposal.price)}
+                                        {formatCurrency(proposal.price)}
                                       </Badge>
                                     )}
                                     {proposal.property_link && (
