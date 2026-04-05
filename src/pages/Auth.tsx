@@ -18,6 +18,7 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [userType, setUserType] = useState<UserType>("buyer");
   const [loading, setLoading] = useState(false);
+  const [showTypeForGoogle, setShowTypeForGoogle] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
