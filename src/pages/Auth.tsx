@@ -109,8 +109,8 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* User type selector (signup only) */}
-        {mode === "signup" && (
+        {/* User type selector (signup and Google login) */}
+        {(mode === "signup" || showTypeForGoogle) && (
           <div className="flex gap-3 mb-6">
             <button
               type="button"
