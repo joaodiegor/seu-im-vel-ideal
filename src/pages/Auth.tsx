@@ -236,6 +236,12 @@ const Auth = () => {
             className="w-full gap-2"
             disabled={loading}
             onClick={async () => {
+              if (mode === "login" && !showTypeForGoogle) {
+                setShowTypeForGoogle(true);
+                toast.info("Escolha seu tipo de conta antes de continuar com Google.");
+                return;
+              }
+              localStorage.setItem("google_signup_user_type", userType);
               const { error } = await lovable.auth.signInWithOAuth("google", {
                 redirect_uri: window.location.origin,
               });
