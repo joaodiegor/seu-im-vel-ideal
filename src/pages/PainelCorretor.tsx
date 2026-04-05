@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, CheckCircle, MessageSquare, Pencil } from "lucide-react";
+import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, CheckCircle, MessageSquare, Pencil, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import ProposalChat from "@/components/ProposalChat";
 import ProposalFormModal from "@/components/ProposalFormModal";
+import DirectChat from "@/components/DirectChat";
 
 interface PropertyRequest {
   id: string;
@@ -98,6 +99,10 @@ const PainelCorretor = () => {
   // Chat modal
   const [chatProposal, setChatProposal] = useState<BrokerProposal | null>(null);
 
+  // Direct conversations
+  const [directConversations, setDirectConversations] = useState<{ id: string; otherName: string; otherUserId: string }[]>([]);
+  const [activeDirectChat, setActiveDirectChat] = useState<{ id: string; otherName: string } | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/auth"); return; }
@@ -145,6 +150,36 @@ const PainelCorretor = () => {
       setBrokerProposals(mapped);
       setSentProposalIds(new Set(mapped.map((p: any) => p.request_id)));
     }
+    // Fetch direct conversations
+    if (user) {
+      const { data: convos } = await supabase
+        .from("conversations")
+        .select("id, participant_1, participant_2")
+        .or(`participant_1.eq.${user.id},participant_2.eq.${user.id}`);
+
+      if (convos && convos.length > 0) {
+        const otherUserIds = convos.map((c: any) =>
+          c.participant_1 === user.id ? c.participant_2 : c.participant_1
+        );
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", otherUserIds);
+
+        const profileMap: Record<string, string> = {};
+        (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p.full_name; });
+
+        setDirectConversations(
+          convos.map((c: any) => {
+            const otherId = c.participant_1 === user.id ? c.participant_2 : c.participant_1;
+            return { id: c.id, otherName: profileMap[otherId] || "Usuário", otherUserId: otherId };
+          })
+        );
+      } else {
+        setDirectConversations([]);
+      }
+    }
+
     setLoading(false);
   };
 
@@ -435,6 +470,44 @@ const PainelCorretor = () => {
                 ))}
               </div>
             </div>
+           )}
+
+          {/* Direct Conversations */}
+          {!loading && directConversations.length > 0 && (
+            <div className="mt-12">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground font-display flex items-center gap-2">
+                  <MessageCircle className="h-6 w-6 text-primary" />
+                  Conversas diretas
+                </h2>
+                <p className="text-muted-foreground mt-1">Mensagens de vendedores interessados em seus serviços.</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {directConversations.map((conv, i) => (
+                  <motion.div
+                    key={conv.id}
+                    className="bg-card rounded-xl p-6 border border-border/50 shadow-card flex flex-col"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.04 }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <MessageCircle className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">{conv.otherName}</p>
+                        <p className="text-xs text-muted-foreground">Conversa direta</p>
+                      </div>
+                    </div>
+                    <Button variant="default" size="sm" className="w-full" onClick={() => setActiveDirectChat({ id: conv.id, otherName: conv.otherName })}>
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Abrir conversa
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </main>
@@ -473,6 +546,21 @@ const PainelCorretor = () => {
           </DialogHeader>
           {chatProposal && (
             <ProposalChat proposalId={chatProposal.id} brokerName={chatProposal.request?.requester_name || "Comprador"} />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Direct Chat Modal */}
+      <Dialog open={!!activeDirectChat} onOpenChange={(open) => !open && setActiveDirectChat(null)}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-0">
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <MessageCircle className="h-5 w-5 text-primary" />
+              Chat com {activeDirectChat?.otherName || "Usuário"}
+            </DialogTitle>
+          </DialogHeader>
+          {activeDirectChat && (
+            <DirectChat conversationId={activeDirectChat.id} otherName={activeDirectChat.otherName} />
           )}
         </DialogContent>
       </Dialog>
