@@ -15,6 +15,7 @@ import InstallPWA from "./components/InstallPWA.tsx";
 import AdminPanel from "./pages/AdminPanel.tsx";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade.tsx";
 import TermosUso from "./pages/TermosUso.tsx";
+import ResetPassword from "./pages/ResetPassword.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
