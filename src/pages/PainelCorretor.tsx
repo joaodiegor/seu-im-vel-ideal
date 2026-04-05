@@ -150,6 +150,36 @@ const PainelCorretor = () => {
       setBrokerProposals(mapped);
       setSentProposalIds(new Set(mapped.map((p: any) => p.request_id)));
     }
+    // Fetch direct conversations
+    if (user) {
+      const { data: convos } = await supabase
+        .from("conversations")
+        .select("id, participant_1, participant_2")
+        .or(`participant_1.eq.${user.id},participant_2.eq.${user.id}`);
+
+      if (convos && convos.length > 0) {
+        const otherUserIds = convos.map((c: any) =>
+          c.participant_1 === user.id ? c.participant_2 : c.participant_1
+        );
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("user_id, full_name")
+          .in("user_id", otherUserIds);
+
+        const profileMap: Record<string, string> = {};
+        (profiles || []).forEach((p: any) => { profileMap[p.user_id] = p.full_name; });
+
+        setDirectConversations(
+          convos.map((c: any) => {
+            const otherId = c.participant_1 === user.id ? c.participant_2 : c.participant_1;
+            return { id: c.id, otherName: profileMap[otherId] || "Usuário", otherUserId: otherId };
+          })
+        );
+      } else {
+        setDirectConversations([]);
+      }
+    }
+
     setLoading(false);
   };
 
