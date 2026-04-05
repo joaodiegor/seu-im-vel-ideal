@@ -414,7 +414,6 @@ const PainelCorretor = () => {
                       </div>
                       {proposal.price && (
                         <div className="flex items-center gap-2 text-foreground">
-                          <DollarSign className="h-4 w-4 text-primary shrink-0" />
                           <span className="text-sm">{formatCurrency(proposal.price)}</span>
                         </div>
                       )}
