@@ -549,6 +549,21 @@ const PainelCorretor = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Direct Chat Modal */}
+      <Dialog open={!!activeDirectChat} onOpenChange={(open) => !open && setActiveDirectChat(null)}>
+        <DialogContent className="sm:max-w-md p-0 overflow-hidden">
+          <DialogHeader className="px-6 pt-6 pb-0">
+            <DialogTitle className="font-display text-xl flex items-center gap-2">
+              <MessageCircle className="h-5 w-5 text-primary" />
+              Chat com {activeDirectChat?.otherName || "Usuário"}
+            </DialogTitle>
+          </DialogHeader>
+          {activeDirectChat && (
+            <DirectChat conversationId={activeDirectChat.id} otherName={activeDirectChat.otherName} />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
