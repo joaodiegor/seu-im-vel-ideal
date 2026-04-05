@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import {
   Home, MapPin, DollarSign, BedDouble, Clock, MessageSquare, User,
   ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2, Star,
-  ChevronLeft, ChevronRight, Eye, EyeOff
+  ChevronLeft, ChevronRight, Eye, EyeOff, X
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -113,56 +113,112 @@ const StarRating = ({ rating, onRate, size = "md" }: { rating: number; onRate?: 
 
 const ImageCarousel = ({ images }: { images: ProposalImage[] }) => {
   const [current, setCurrent] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
   const total = images.length;
 
   const prev = () => setCurrent((c) => (c === 0 ? total - 1 : c - 1));
   const next = () => setCurrent((c) => (c === total - 1 ? 0 : c + 1));
 
+  const openLightbox = (index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
+
+  const lbPrev = () => setLightboxIndex((c) => (c === 0 ? total - 1 : c - 1));
+  const lbNext = () => setLightboxIndex((c) => (c === total - 1 ? 0 : c + 1));
+
   return (
-    <div className="mt-3 relative rounded-lg overflow-hidden border border-border/50 bg-secondary/20 max-w-sm">
-      <div className="relative aspect-[4/3]">
-        <img
-          src={images[current].image_url}
-          alt={`Foto ${current + 1} de ${total}`}
-          className="w-full h-full object-contain"
-          loading="lazy"
-        />
+    <>
+      <div className="mt-3 relative rounded-lg overflow-hidden border border-border/50 bg-secondary/20 max-w-sm">
+        <div className="relative aspect-[4/3] cursor-pointer" onClick={() => openLightbox(current)}>
+          <img
+            src={images[current].image_url}
+            alt={`Foto ${current + 1} de ${total}`}
+            className="w-full h-full object-contain"
+            loading="lazy"
+          />
+          {total > 1 && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); prev(); }}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:bg-background transition-colors"
+              >
+                <ChevronLeft className="h-4 w-4 text-foreground" />
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); next(); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:bg-background transition-colors"
+              >
+                <ChevronRight className="h-4 w-4 text-foreground" />
+              </button>
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-xs font-medium text-foreground">
+                {current + 1} / {total}
+              </div>
+            </>
+          )}
+        </div>
         {total > 1 && (
-          <>
-            <button
-              onClick={prev}
-              className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:bg-background transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4 text-foreground" />
-            </button>
-            <button
-              onClick={next}
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-1.5 shadow-sm hover:bg-background transition-colors"
-            >
-              <ChevronRight className="h-4 w-4 text-foreground" />
-            </button>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full px-2.5 py-0.5 text-xs font-medium text-foreground">
-              {current + 1} / {total}
-            </div>
-          </>
+          <div className="flex gap-1.5 p-2 overflow-x-auto">
+            {images.map((img, i) => (
+              <button
+                key={img.id}
+                onClick={() => setCurrent(i)}
+                className={`shrink-0 w-10 h-10 rounded-md overflow-hidden border-2 transition-colors ${
+                  i === current ? "border-primary" : "border-transparent hover:border-border"
+                }`}
+              >
+                <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+              </button>
+            ))}
+          </div>
         )}
       </div>
-      {total > 1 && (
-        <div className="flex gap-1.5 p-2 overflow-x-auto">
-          {images.map((img, i) => (
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              key={img.id}
-              onClick={() => setCurrent(i)}
-              className={`shrink-0 w-10 h-10 rounded-md overflow-hidden border-2 transition-colors ${
-                i === current ? "border-primary" : "border-transparent hover:border-border"
-              }`}
+              onClick={() => setLightboxOpen(false)}
+              className="absolute -top-10 right-0 text-white/80 hover:text-white transition-colors z-10"
             >
-              <img src={img.image_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+              <X className="h-6 w-6" />
             </button>
-          ))}
+            <img
+              src={images[lightboxIndex].image_url}
+              alt={`Foto ${lightboxIndex + 1} de ${total}`}
+              className="w-full max-h-[80vh] object-contain rounded-lg"
+            />
+            {total > 1 && (
+              <>
+                <button
+                  onClick={lbPrev}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-background transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5 text-foreground" />
+                </button>
+                <button
+                  onClick={lbNext}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-background/80 backdrop-blur-sm rounded-full p-2 shadow-md hover:bg-background transition-colors"
+                >
+                  <ChevronRight className="h-5 w-5 text-foreground" />
+                </button>
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium text-foreground">
+                  {lightboxIndex + 1} / {total}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
