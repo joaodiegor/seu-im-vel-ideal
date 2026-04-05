@@ -49,12 +49,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    const applyGoogleUserType = async (userId: string) => {
+      const pendingType = localStorage.getItem("google_signup_user_type");
+      if (pendingType && (pendingType === "buyer" || pendingType === "broker")) {
+        localStorage.removeItem("google_signup_user_type");
+        await supabase.from("profiles").update({ user_type: pendingType }).eq("user_id", userId);
+      }
+    };
+
     // Set up auth listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
+          if (_event === "SIGNED_IN") {
+            await applyGoogleUserType(session.user.id);
+          }
           // Use setTimeout to avoid Supabase client deadlock
           setTimeout(() => fetchProfile(session.user.id), 0);
         } else {

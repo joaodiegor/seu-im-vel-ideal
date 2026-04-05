@@ -18,6 +18,7 @@ const Auth = () => {
   const [mode, setMode] = useState<AuthMode>("login");
   const [userType, setUserType] = useState<UserType>("buyer");
   const [loading, setLoading] = useState(false);
+  const [showTypeForGoogle, setShowTypeForGoogle] = useState(false);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -109,8 +110,8 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* User type selector (signup only) */}
-        {mode === "signup" && (
+        {/* User type selector (signup and Google login) */}
+        {(mode === "signup" || showTypeForGoogle) && (
           <div className="flex gap-3 mb-6">
             <button
               type="button"
@@ -235,6 +236,12 @@ const Auth = () => {
             className="w-full gap-2"
             disabled={loading}
             onClick={async () => {
+              if (mode === "login" && !showTypeForGoogle) {
+                setShowTypeForGoogle(true);
+                toast.info("Escolha seu tipo de conta antes de continuar com Google.");
+                return;
+              }
+              localStorage.setItem("google_signup_user_type", userType);
               const { error } = await lovable.auth.signInWithOAuth("google", {
                 redirect_uri: window.location.origin,
               });
