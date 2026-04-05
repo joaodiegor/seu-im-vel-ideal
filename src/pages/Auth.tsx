@@ -220,6 +220,35 @@ const Auth = () => {
             {loading ? "Processando..." : mode === "login" ? "Entrar" : "Criar conta"}
           </Button>
 
+          {mode === "login" && (
+            <div className="text-right">
+              <button
+                type="button"
+                onClick={async () => {
+                  if (!form.email) {
+                    toast.error("Digite seu e-mail primeiro.");
+                    return;
+                  }
+                  setLoading(true);
+                  try {
+                    const { error } = await supabase.auth.resetPasswordForEmail(form.email, {
+                      redirectTo: `${window.location.origin}/reset-password`,
+                    });
+                    if (error) throw error;
+                    toast.success("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
+                  } catch (error: any) {
+                    toast.error(error.message || "Erro ao enviar e-mail de recuperação.");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
+                className="text-sm text-primary font-semibold hover:underline"
+              >
+                Esqueceu sua senha?
+              </button>
+            </div>
+          )}
+
           <div className="relative my-2">
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-border" />
