@@ -99,6 +99,10 @@ const PainelCorretor = () => {
   // Chat modal
   const [chatProposal, setChatProposal] = useState<BrokerProposal | null>(null);
 
+  // Direct conversations
+  const [directConversations, setDirectConversations] = useState<{ id: string; otherName: string; otherUserId: string }[]>([]);
+  const [activeDirectChat, setActiveDirectChat] = useState<{ id: string; otherName: string } | null>(null);
+
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/auth"); return; }
