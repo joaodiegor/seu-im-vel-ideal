@@ -107,6 +107,7 @@ const Navbar = () => {
           <a href="/corretores" className="block text-sm text-primary-foreground/80 py-2">Corretores</a>
           {user ? (
             <>
+              <a href="/perfil" className="block text-sm text-primary-foreground/80 py-2">Meu Perfil</a>
               {isBroker ? (
                 <a href="/painel-corretor" className="block text-sm text-primary-foreground/80 py-2">Painel do Corretor</a>
               ) : (
