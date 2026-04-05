@@ -470,6 +470,44 @@ const PainelCorretor = () => {
                 ))}
               </div>
             </div>
+           )}
+
+          {/* Direct Conversations */}
+          {!loading && directConversations.length > 0 && (
+            <div className="mt-12">
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-foreground font-display flex items-center gap-2">
+                  <MessageCircle className="h-6 w-6 text-primary" />
+                  Conversas diretas
+                </h2>
+                <p className="text-muted-foreground mt-1">Mensagens de vendedores interessados em seus serviços.</p>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {directConversations.map((conv, i) => (
+                  <motion.div
+                    key={conv.id}
+                    className="bg-card rounded-xl p-6 border border-border/50 shadow-card flex flex-col"
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.04 }}
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <MessageCircle className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-foreground">{conv.otherName}</p>
+                        <p className="text-xs text-muted-foreground">Conversa direta</p>
+                      </div>
+                    </div>
+                    <Button variant="default" size="sm" className="w-full" onClick={() => setActiveDirectChat({ id: conv.id, otherName: conv.otherName })}>
+                      <MessageSquare className="h-4 w-4 mr-2" />
+                      Abrir conversa
+                    </Button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           )}
         </div>
       </main>
