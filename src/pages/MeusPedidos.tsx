@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import {
   Home, MapPin, DollarSign, BedDouble, Clock, MessageSquare, User,
   ExternalLink, ChevronDown, ChevronUp, CheckCircle, XCircle, Archive, Loader2, Star,
-  ChevronLeft, ChevronRight, Eye, EyeOff
+  ChevronLeft, ChevronRight, Eye, EyeOff, X
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
