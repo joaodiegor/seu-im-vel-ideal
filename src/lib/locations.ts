@@ -39,6 +39,8 @@ export const BRAZIL_STATES: BrazilState[] = [
 // Cidades brasileiras com mais de 500 mil habitantes (estimativa IBGE)
 // Bairros: top 20 mockados por cidade. Cidades sem mock detalhado caem em DEFAULT_NEIGHBORHOODS.
 export const CITIES_BY_STATE: Record<string, string[]> = {
+  AC: ["Rio Branco"],
+  AP: ["Macapá"],
   AM: ["Manaus"],
   PA: ["Belém", "Ananindeua"],
   MA: ["São Luís"],
@@ -55,15 +57,18 @@ export const CITIES_BY_STATE: Record<string, string[]> = {
   MT: ["Cuiabá"],
   MS: ["Campo Grande"],
   MG: ["Belo Horizonte", "Uberlândia", "Contagem", "Juiz de Fora", "Betim"],
-  ES: ["Serra", "Vila Velha", "Cariacica"],
+  ES: ["Vitória", "Serra", "Vila Velha", "Cariacica"],
   RJ: ["Rio de Janeiro", "São Gonçalo", "Duque de Caxias", "Nova Iguaçu", "Niterói", "Belford Roxo", "São João de Meriti", "Campos dos Goytacazes"],
   SP: [
     "São Paulo", "Guarulhos", "Campinas", "São Bernardo do Campo", "Santo André",
     "Osasco", "São José dos Campos", "Ribeirão Preto", "Sorocaba", "Mauá", "São José do Rio Preto",
   ],
   PR: ["Curitiba", "Londrina", "Maringá"],
-  SC: ["Joinville", "Florianópolis"],
+  SC: ["Florianópolis", "Joinville"],
   RS: ["Porto Alegre", "Caxias do Sul"],
+  RO: ["Porto Velho"],
+  RR: ["Boa Vista"],
+  TO: ["Palmas"],
 };
 
 // Bairros mockados (top 20) para algumas grandes cidades.
