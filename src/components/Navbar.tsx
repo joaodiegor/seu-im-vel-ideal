@@ -38,7 +38,7 @@ const Navbar = () => {
             </a>
           )}
           {user && !isBroker && (
-            <a href="/meus-pedidos" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-1.5">
+            <a href="/meus-pedidos" className="text-sm text-foreground/70 hover:text-primary transition-colors flex items-center gap-1.5">
               <FileText className="h-3.5 w-3.5" />
               Meus Pedidos
             </a>
@@ -46,7 +46,7 @@ const Navbar = () => {
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-primary-foreground hover:bg-primary-foreground/10 gap-2">
+                <Button variant="ghost" size="sm" className="text-foreground hover:bg-muted gap-2">
                   <User className="h-4 w-4" />
                   <span className="max-w-[120px] truncate">
                     {profile?.full_name || user.email?.split("@")[0]}
@@ -85,7 +85,7 @@ const Navbar = () => {
             </DropdownMenu>
           ) : (
             <div className="flex items-center gap-3">
-              <a href="/auth" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              <a href="/auth" className="text-sm text-foreground/70 hover:text-primary transition-colors">
                 Entrar
               </a>
               <Button variant="hero" size="sm" asChild>
@@ -96,27 +96,27 @@ const Navbar = () => {
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden text-primary-foreground" onClick={() => setOpen(!open)}>
+        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)}>
           {open ? <X /> : <Menu />}
         </button>
       </div>
 
       {open && (
-        <div className="md:hidden bg-primary/95 backdrop-blur-md border-t border-primary-foreground/10 px-6 pb-4 space-y-3">
-          <a href="/#como-funciona" className="block text-sm text-primary-foreground/80 py-2" onClick={() => setOpen(false)}>Como funciona</a>
-          <a href="/corretores" className="block text-sm text-primary-foreground/80 py-2">Corretores</a>
+        <div className="md:hidden bg-background/95 backdrop-blur-md border-t border-border px-6 pb-4 space-y-3">
+          <a href="/#como-funciona" className="block text-sm text-foreground/70 py-2" onClick={() => setOpen(false)}>Como funciona</a>
+          <a href="/corretores" className="block text-sm text-foreground/70 py-2">Corretores</a>
           {user ? (
             <>
-              <a href="/perfil" className="block text-sm text-primary-foreground/80 py-2">Meu Perfil</a>
+              <a href="/perfil" className="block text-sm text-foreground/70 py-2">Meu Perfil</a>
               {isBroker ? (
-                <a href="/painel-corretor" className="block text-sm text-primary-foreground/80 py-2">Painel do Corretor</a>
+                <a href="/painel-corretor" className="block text-sm text-foreground/70 py-2">Painel do Corretor</a>
               ) : (
-                <a href="/meus-pedidos" className="block text-sm text-primary-foreground/80 py-2">Meus Pedidos</a>
+                <a href="/meus-pedidos" className="block text-sm text-foreground/70 py-2">Meus Pedidos</a>
               )}
-              <div className="text-sm text-primary-foreground/80 py-2">
+              <div className="text-sm text-foreground/70 py-2">
                 Olá, {profile?.full_name || user.email?.split("@")[0]}
               </div>
-              <Button variant="ghost" size="sm" className="w-full text-primary-foreground" onClick={signOut}>
+              <Button variant="ghost" size="sm" className="w-full" onClick={signOut}>
                 <LogOut className="h-4 w-4 mr-2" /> Sair
               </Button>
             </>
