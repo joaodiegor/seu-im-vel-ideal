@@ -70,7 +70,7 @@ const RequestForm = () => {
     const { error } = await supabase.from("property_requests").insert({
       user_id: user.id,
       property_type: formData.tipo,
-      neighborhood: `${formData.bairro}, ${formData.cidade}/${formData.estado}`,
+      neighborhood: `${bairroFinal}, ${formData.cidade}/${formData.estado}`,
       bedrooms: showQuartosBanheiros && formData.quartos ? parseInt(formData.quartos) : null,
       bathrooms: showQuartosBanheiros && formData.banheiros ? parseInt(formData.banheiros) : null,
       min_area: minAreaNum,
