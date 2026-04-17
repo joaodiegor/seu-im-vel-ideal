@@ -10,35 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-
-const bairros = [
-  "Altos do Calhau",
-  "Angelim",
-  "Araçagy",
-  "Aracagy",
-  "Bequimão",
-  "Calhau",
-  "Cidade Operária",
-  "Cohab",
-  "Cohama",
-  "Cohatrac",
-  "Forquilha",
-  "Ipase",
-  "Jardim Eldorado",
-  "Jardim São Cristóvão",
-  "Maiobão",
-  "Monte Castelo",
-  "Olho D'Água",
-  "Ponta D'Areia",
-  "Recanto dos Vinhais",
-  "Renascença",
-  "Sacavém",
-  "Santa Cruz",
-  "São Francisco",
-  "Turu",
-  "Vinhais",
-  "Outro",
-];
+import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity } from "@/lib/locations";
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
 
@@ -48,6 +20,8 @@ const RequestForm = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     tipo: "",
+    estado: "",
+    cidade: "",
     bairro: "",
     quartos: "",
     banheiros: "",
@@ -59,6 +33,10 @@ const RequestForm = () => {
     nome_visivel: true,
     telefone_visivel: true,
   });
+  const [locLoading, setLocLoading] = useState<"estado" | "cidade" | null>(null);
+
+  const cities = formData.estado ? getCitiesByState(formData.estado) : [];
+  const neighborhoods = formData.cidade ? getNeighborhoodsByCity(formData.cidade) : [];
 
   const showQuartosBanheiros = tiposComQuartos.includes(formData.tipo);
 
@@ -71,7 +49,7 @@ const RequestForm = () => {
       return;
     }
 
-    if (!formData.tipo || !formData.bairro || !formData.nome || !formData.telefone) {
+    if (!formData.tipo || !formData.estado || !formData.cidade || !formData.bairro || !formData.nome || !formData.telefone) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
@@ -89,7 +67,7 @@ const RequestForm = () => {
     const { error } = await supabase.from("property_requests").insert({
       user_id: user.id,
       property_type: formData.tipo,
-      neighborhood: formData.bairro,
+      neighborhood: `${formData.bairro}, ${formData.cidade}/${formData.estado}`,
       bedrooms: showQuartosBanheiros && formData.quartos ? parseInt(formData.quartos) : null,
       bathrooms: showQuartosBanheiros && formData.banheiros ? parseInt(formData.banheiros) : null,
       min_area: minAreaNum,
@@ -120,13 +98,13 @@ const RequestForm = () => {
     supabase.functions.invoke("send-push-notification", {
       body: {
         title: "Novo pedido publicado!",
-        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${formData.bairro}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
+        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${formData.bairro}, ${formData.cidade}/${formData.estado}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
         url: "/painel-corretor",
       },
     }).catch(console.error);
 
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
-    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
+    setFormData({ tipo: "", estado: "", cidade: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
   };
 
   return (
@@ -234,15 +212,77 @@ const RequestForm = () => {
                 />
               </div>
 
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Estado *</label>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={(v) => {
+                      setLocLoading("estado");
+                      setFormData({ ...formData, estado: v, cidade: "", bairro: "" });
+                      setTimeout(() => setLocLoading(null), 150);
+                    }}
+                  >
+                    <SelectTrigger>
+                      {locLoading === "estado" ? (
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="Selecione o estado" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BRAZIL_STATES.map((s) => (
+                        <SelectItem key={s.uf} value={s.uf}>
+                          {s.uf} - {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Cidade *</label>
+                  <Select
+                    value={formData.cidade}
+                    onValueChange={(v) => {
+                      setLocLoading("cidade");
+                      setFormData({ ...formData, cidade: v, bairro: "" });
+                      setTimeout(() => setLocLoading(null), 150);
+                    }}
+                    disabled={!formData.estado || cities.length === 0}
+                  >
+                    <SelectTrigger>
+                      {locLoading === "cidade" ? (
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="Selecione a cidade" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cities.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">Bairro preferido *</label>
-                <Select value={formData.bairro} onValueChange={(v) => setFormData({ ...formData, bairro: v })}>
+                <Select
+                  value={formData.bairro}
+                  onValueChange={(v) => setFormData({ ...formData, bairro: v })}
+                  disabled={!formData.cidade}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Escolha o bairro" />
+                    <SelectValue placeholder="Selecione o bairro" />
                   </SelectTrigger>
                   <SelectContent>
-                    {bairros.map(b => (
-                      <SelectItem key={b} value={b.toLowerCase()}>{b}</SelectItem>
+                    {neighborhoods.map((b) => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
