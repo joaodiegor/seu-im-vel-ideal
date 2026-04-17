@@ -400,6 +400,42 @@ const NEIGHBORHOODS_BY_CITY: Record<string, string[]> = {
     "Madureira", "Marechal Floriano", "Nossa Senhora da Saúde", "Panazzolo", "Pio X",
     "Planalto", "Pioneiro", "Rio Branco", "Sagrada Família", "São Pelegrino",
   ],
+  "Rio Branco": [
+    "Centro", "Bosque", "Cadeia Velha", "Calafate", "Conjunto Castelo Branco",
+    "Conjunto Esperança", "Conjunto Universitário", "Estação Experimental", "Floresta Sul", "Habitasa",
+    "Ipase", "Jardim Tropical", "Manoel Julião", "Morada do Sol", "Palheiral",
+    "Placas", "Portal da Amazônia", "Tancredo Neves", "Vila Acre", "Vila Ivonete",
+  ],
+  "Macapá": [
+    "Centro", "Trem", "Santa Rita", "Jesus de Nazaré", "Beirol",
+    "Buritizal", "Pacoval", "Universidade", "Jardim Marco Zero", "Novo Horizonte",
+    "Renascer", "Marabaixo", "São Lázaro", "Santa Inês", "Cidade Nova",
+    "Infraero", "Zerão", "Perpétuo Socorro", "Muca", "Araxá",
+  ],
+  "Vitória": [
+    "Centro", "Praia do Canto", "Jardim da Penha", "Jardim Camburi", "Mata da Praia",
+    "Bento Ferreira", "Enseada do Suá", "Ilha do Boi", "Ilha do Frade", "Barro Vermelho",
+    "Santa Lúcia", "Santa Helena", "Praia do Suá", "Goiabeiras", "Maria Ortiz",
+    "República", "Consolação", "Jucutuquara", "Fradinhos", "Itararé",
+  ],
+  "Porto Velho": [
+    "Centro", "Olaria", "Caiari", "Arigolândia", "Areal",
+    "Costa e Silva", "Embratel", "Flodoaldo Pontes Pinto", "Industrial", "Lagoinha",
+    "Liberdade", "Mato Grosso", "Mocambo", "Nova Esperança", "Nova Floresta",
+    "Pedrinhas", "Rio Madeira", "São Cristóvão", "São João Bosco", "Tiradentes",
+  ],
+  "Boa Vista": [
+    "Centro", "Aparecida", "Asas", "Buritis", "Caçari",
+    "Caimbé", "Calungá", "Canarinho", "Cauamé", "Cinturão Verde",
+    "Equatorial", "Jardim Floresta", "Jardim Primavera", "Liberdade", "Mecejana",
+    "Paraviana", "Pricumã", "São Francisco", "São Vicente", "Tancredo Neves",
+  ],
+  "Palmas": [
+    "Plano Diretor Sul", "Plano Diretor Norte", "Aureny I", "Aureny II", "Aureny III",
+    "Aureny IV", "Taquaralto", "Taquari", "Lago Sul", "Lago Norte",
+    "Jardim Aureny", "Jardim Janaína", "Jardim Taquari", "Morada do Sol", "Santa Bárbara",
+    "Santa Fé", "Setor Bertaville", "Setor Sul", "Vila União", "Buritirana",
+  ],
 };
 
 export function getCitiesByState(uf: string): string[] {
