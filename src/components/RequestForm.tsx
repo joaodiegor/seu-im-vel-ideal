@@ -250,7 +250,7 @@ const RequestForm = () => {
                     value={formData.cidade}
                     onValueChange={(v) => {
                       setLocLoading("cidade");
-                      setFormData({ ...formData, cidade: v, bairro: "" });
+                      setFormData({ ...formData, cidade: v, bairro: "", bairro_outro: "" });
                       setTimeout(() => setLocLoading(null), 150);
                     }}
                     disabled={!formData.estado || cities.length === 0}
