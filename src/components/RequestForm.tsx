@@ -10,35 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-
-const bairros = [
-  "Altos do Calhau",
-  "Angelim",
-  "Araçagy",
-  "Aracagy",
-  "Bequimão",
-  "Calhau",
-  "Cidade Operária",
-  "Cohab",
-  "Cohama",
-  "Cohatrac",
-  "Forquilha",
-  "Ipase",
-  "Jardim Eldorado",
-  "Jardim São Cristóvão",
-  "Maiobão",
-  "Monte Castelo",
-  "Olho D'Água",
-  "Ponta D'Areia",
-  "Recanto dos Vinhais",
-  "Renascença",
-  "Sacavém",
-  "Santa Cruz",
-  "São Francisco",
-  "Turu",
-  "Vinhais",
-  "Outro",
-];
+import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity } from "@/lib/locations";
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
 
