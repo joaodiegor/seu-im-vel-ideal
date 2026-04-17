@@ -49,7 +49,7 @@ const RequestForm = () => {
       return;
     }
 
-    if (!formData.tipo || !formData.bairro || !formData.nome || !formData.telefone) {
+    if (!formData.tipo || !formData.estado || !formData.cidade || !formData.bairro || !formData.nome || !formData.telefone) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
