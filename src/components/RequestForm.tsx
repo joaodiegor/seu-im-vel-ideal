@@ -98,13 +98,13 @@ const RequestForm = () => {
     supabase.functions.invoke("send-push-notification", {
       body: {
         title: "Novo pedido publicado!",
-        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${formData.bairro}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
+        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${formData.bairro}, ${formData.cidade}/${formData.estado}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
         url: "/painel-corretor",
       },
     }).catch(console.error);
 
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
-    setFormData({ tipo: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
+    setFormData({ tipo: "", estado: "", cidade: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
   };
 
   return (
