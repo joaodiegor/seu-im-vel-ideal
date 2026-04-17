@@ -66,15 +66,10 @@ export const CITIES_BY_STATE: Record<string, string[]> = {
   RS: ["Porto Alegre", "Caxias do Sul"],
 };
 
-const DEFAULT_NEIGHBORHOODS = [
-  "Centro", "Jardim América", "Vila Nova", "Boa Vista", "São José",
-  "Santa Maria", "Bela Vista", "Industrial", "Cidade Nova", "Vila Mariana",
-  "Jardim Europa", "Parque Industrial", "São Francisco", "Santa Cruz", "São Pedro",
-  "Vila Olímpia", "Jardim Paulista", "Alto da Boa Vista", "Vila Madalena", "Morumbi",
-];
-
 // Bairros mockados (top 20) para algumas grandes cidades.
-// Cidades sem entrada explícita usam DEFAULT_NEIGHBORHOODS.
+// Cidades sem entrada explícita retornam apenas a opção "Outros".
+export const OTHER_NEIGHBORHOOD = "Outros";
+
 const NEIGHBORHOODS_BY_CITY: Record<string, string[]> = {
   "São Luís": [
     "Altos do Calhau", "Angelim", "Araçagy", "Bequimão", "Calhau",
@@ -143,5 +138,6 @@ export function getCitiesByState(uf: string): string[] {
 }
 
 export function getNeighborhoodsByCity(city: string): string[] {
-  return NEIGHBORHOODS_BY_CITY[city] ?? DEFAULT_NEIGHBORHOODS;
+  const list = NEIGHBORHOODS_BY_CITY[city] ?? [];
+  return [...list, OTHER_NEIGHBORHOOD];
 }

@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity } from "@/lib/locations";
+import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity, OTHER_NEIGHBORHOOD } from "@/lib/locations";
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
 
@@ -23,6 +23,7 @@ const RequestForm = () => {
     estado: "",
     cidade: "",
     bairro: "",
+    bairro_outro: "",
     quartos: "",
     banheiros: "",
     metragem_minima: "",
@@ -49,7 +50,9 @@ const RequestForm = () => {
       return;
     }
 
-    if (!formData.tipo || !formData.estado || !formData.cidade || !formData.bairro || !formData.nome || !formData.telefone) {
+    const bairroFinal = formData.bairro === OTHER_NEIGHBORHOOD ? formData.bairro_outro.trim() : formData.bairro;
+
+    if (!formData.tipo || !formData.estado || !formData.cidade || !bairroFinal || !formData.nome || !formData.telefone) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
@@ -67,7 +70,7 @@ const RequestForm = () => {
     const { error } = await supabase.from("property_requests").insert({
       user_id: user.id,
       property_type: formData.tipo,
-      neighborhood: `${formData.bairro}, ${formData.cidade}/${formData.estado}`,
+      neighborhood: `${bairroFinal}, ${formData.cidade}/${formData.estado}`,
       bedrooms: showQuartosBanheiros && formData.quartos ? parseInt(formData.quartos) : null,
       bathrooms: showQuartosBanheiros && formData.banheiros ? parseInt(formData.banheiros) : null,
       min_area: minAreaNum,
@@ -98,13 +101,13 @@ const RequestForm = () => {
     supabase.functions.invoke("send-push-notification", {
       body: {
         title: "Novo pedido publicado!",
-        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${formData.bairro}, ${formData.cidade}/${formData.estado}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
+        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${bairroFinal}, ${formData.cidade}/${formData.estado}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
         url: "/painel-corretor",
       },
     }).catch(console.error);
 
     toast.success("Pedido publicado com sucesso! Corretores começarão a enviar propostas em breve.");
-    setFormData({ tipo: "", estado: "", cidade: "", bairro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
+    setFormData({ tipo: "", estado: "", cidade: "", bairro: "", bairro_outro: "", quartos: "", banheiros: "", metragem_minima: "", orcamento: "", detalhes: "", nome: "", telefone: "", nome_visivel: true, telefone_visivel: true });
   };
 
   return (
@@ -219,7 +222,7 @@ const RequestForm = () => {
                     value={formData.estado}
                     onValueChange={(v) => {
                       setLocLoading("estado");
-                      setFormData({ ...formData, estado: v, cidade: "", bairro: "" });
+                      setFormData({ ...formData, estado: v, cidade: "", bairro: "", bairro_outro: "" });
                       setTimeout(() => setLocLoading(null), 150);
                     }}
                   >
@@ -247,7 +250,7 @@ const RequestForm = () => {
                     value={formData.cidade}
                     onValueChange={(v) => {
                       setLocLoading("cidade");
-                      setFormData({ ...formData, cidade: v, bairro: "" });
+                      setFormData({ ...formData, cidade: v, bairro: "", bairro_outro: "" });
                       setTimeout(() => setLocLoading(null), 150);
                     }}
                     disabled={!formData.estado || cities.length === 0}
@@ -274,7 +277,7 @@ const RequestForm = () => {
                 <label className="block text-sm font-medium text-foreground mb-1.5">Bairro preferido *</label>
                 <Select
                   value={formData.bairro}
-                  onValueChange={(v) => setFormData({ ...formData, bairro: v })}
+                  onValueChange={(v) => setFormData({ ...formData, bairro: v, bairro_outro: "" })}
                   disabled={!formData.cidade}
                 >
                   <SelectTrigger>
@@ -286,6 +289,14 @@ const RequestForm = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {formData.bairro === OTHER_NEIGHBORHOOD && (
+                  <Input
+                    className="mt-2"
+                    placeholder="Digite o nome do bairro"
+                    value={formData.bairro_outro}
+                    onChange={(e) => setFormData({ ...formData, bairro_outro: e.target.value })}
+                  />
+                )}
               </div>
 
               <div>
