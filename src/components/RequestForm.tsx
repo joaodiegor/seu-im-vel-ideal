@@ -101,7 +101,7 @@ const RequestForm = () => {
     supabase.functions.invoke("send-push-notification", {
       body: {
         title: "Novo pedido publicado!",
-        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${formData.bairro}, ${formData.cidade}/${formData.estado}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
+        body: `${tipoLabel[formData.tipo] || formData.tipo} em ${bairroFinal}, ${formData.cidade}/${formData.estado}${budgetNum ? ` - até R$ ${budgetNum.toLocaleString("pt-BR")}` : ""}`,
         url: "/painel-corretor",
       },
     }).catch(console.error);
