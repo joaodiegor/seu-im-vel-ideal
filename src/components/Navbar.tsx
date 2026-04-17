@@ -17,22 +17,22 @@ const Navbar = () => {
   const isBroker = profile?.user_type === "broker";
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/95 backdrop-blur-md border-b border-primary-foreground/10">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="flex items-center gap-2">
-          <img src="/images/logo.png" alt="Brazuka Imóveis" className="h-20" />
+          <img src="/images/logo-color.png" alt="Brazuka Imóveis" className="h-20" />
         </a>
 
         {/* Desktop */}
         <div className="hidden md:flex items-center gap-8">
-          <a href="/#como-funciona" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+          <a href="/#como-funciona" className="text-sm text-foreground/70 hover:text-primary transition-colors">
             Como funciona
           </a>
-          <a href="/corretores" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+          <a href="/corretores" className="text-sm text-foreground/70 hover:text-primary transition-colors">
             Corretores
           </a>
           {user && isBroker && (
-            <a href="/painel-corretor" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors flex items-center gap-1.5">
+            <a href="/painel-corretor" className="text-sm text-foreground/70 hover:text-primary transition-colors flex items-center gap-1.5">
               <LayoutDashboard className="h-3.5 w-3.5" />
               Painel
             </a>
