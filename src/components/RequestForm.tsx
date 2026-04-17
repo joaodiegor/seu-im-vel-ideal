@@ -20,6 +20,8 @@ const RequestForm = () => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     tipo: "",
+    estado: "",
+    cidade: "",
     bairro: "",
     quartos: "",
     banheiros: "",
@@ -31,6 +33,10 @@ const RequestForm = () => {
     nome_visivel: true,
     telefone_visivel: true,
   });
+  const [locLoading, setLocLoading] = useState<"estado" | "cidade" | null>(null);
+
+  const cities = formData.estado ? getCitiesByState(formData.estado) : [];
+  const neighborhoods = formData.cidade ? getNeighborhoodsByCity(formData.cidade) : [];
 
   const showQuartosBanheiros = tiposComQuartos.includes(formData.tipo);
 
