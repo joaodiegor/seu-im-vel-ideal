@@ -23,6 +23,7 @@ const RequestForm = () => {
     estado: "",
     cidade: "",
     bairro: "",
+    bairro_outro: "",
     quartos: "",
     banheiros: "",
     metragem_minima: "",
