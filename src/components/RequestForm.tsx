@@ -50,7 +50,9 @@ const RequestForm = () => {
       return;
     }
 
-    if (!formData.tipo || !formData.estado || !formData.cidade || !formData.bairro || !formData.nome || !formData.telefone) {
+    const bairroFinal = formData.bairro === OTHER_NEIGHBORHOOD ? formData.bairro_outro.trim() : formData.bairro;
+
+    if (!formData.tipo || !formData.estado || !formData.cidade || !bairroFinal || !formData.nome || !formData.telefone) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
