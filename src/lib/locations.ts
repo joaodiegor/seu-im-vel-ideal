@@ -138,5 +138,6 @@ export function getCitiesByState(uf: string): string[] {
 }
 
 export function getNeighborhoodsByCity(city: string): string[] {
-  return NEIGHBORHOODS_BY_CITY[city] ?? DEFAULT_NEIGHBORHOODS;
+  const list = NEIGHBORHOODS_BY_CITY[city] ?? [];
+  return [...list, OTHER_NEIGHBORHOOD];
 }
