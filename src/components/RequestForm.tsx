@@ -222,7 +222,7 @@ const RequestForm = () => {
                     value={formData.estado}
                     onValueChange={(v) => {
                       setLocLoading("estado");
-                      setFormData({ ...formData, estado: v, cidade: "", bairro: "" });
+                      setFormData({ ...formData, estado: v, cidade: "", bairro: "", bairro_outro: "" });
                       setTimeout(() => setLocLoading(null), 150);
                     }}
                   >
