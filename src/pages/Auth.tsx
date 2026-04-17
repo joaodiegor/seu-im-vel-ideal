@@ -98,7 +98,7 @@ const Auth = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <a href="/" className="inline-flex items-center gap-2 mb-6 bg-primary rounded-xl px-4 py-2">
-            <img src="/images/logo.png" alt="SLZ Imóveis" className="h-10" />
+            <img src="/images/logo.png" alt="Brazuka Imóveis" className="h-10" />
           </a>
           <h1 className="text-2xl font-bold text-foreground font-display">
             {mode === "login" ? "Entrar na sua conta" : "Criar nova conta"}

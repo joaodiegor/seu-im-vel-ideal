@@ -152,7 +152,7 @@ Deno.serve(async (req) => {
     for (const sub of targetSubs) {
       try {
         const res = await sendWebPush(
-          sub, payload, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, "mailto:contato@slzimoveis.com.br"
+          sub, payload, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, "mailto:contato@brazukaimoveis.com.br"
         );
 
         if (res.status === 201 || res.status === 200) {

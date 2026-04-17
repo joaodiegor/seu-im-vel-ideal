@@ -1,7 +1,7 @@
 {
-  "name": "SLZ Imóveis",
-  "short_name": "slzimoveis",
-  "description": "Diga o imóvel que quer em São Luís e receba propostas de corretores.",
+  "name": "Brazuka Imóveis",
+  "short_name": "brazukaimoveis",
+  "description": "Diga o imóvel que quer em qualquer cidade do Brasil e receba propostas de corretores.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a365d",

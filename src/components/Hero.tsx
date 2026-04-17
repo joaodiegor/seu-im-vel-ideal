@@ -29,7 +29,7 @@ const Hero = () => {
             transition={{ duration: 0.6 }}>
             
             <span className="inline-block rounded-full bg-accent/20 px-4 py-1.5 text-sm font-medium text-accent-foreground mb-6 backdrop-blur-sm border border-accent-foreground/10">
-              🏠 Novo em São Luís
+              🇧🇷 Em todo o Brasil
             </span>
           </motion.div>
 
@@ -51,7 +51,7 @@ const Hero = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}>
             
-            Descreva o imóvel dos seus sonhos e receba propostas exclusivas dos melhores corretores de São Luís. Sem ligações, sem correria — você escolhe a melhor oferta.
+            Descreva o imóvel dos seus sonhos e receba propostas exclusivas dos melhores corretores do Brasil. Sem ligações, sem correria — você escolhe a melhor oferta.
           </motion.p>
 
           <motion.div

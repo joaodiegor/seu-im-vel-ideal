@@ -137,7 +137,7 @@ const TopBrokers = () => {
             Os melhores avaliados
           </h2>
           <p className="text-muted-foreground mt-4 max-w-lg mx-auto text-lg">
-            Corretores com as melhores avaliações de clientes reais em São Luís.
+            Corretores com as melhores avaliações de clientes reais em todo o Brasil.
           </p>
         </motion.div>
 
