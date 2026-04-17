@@ -212,15 +212,77 @@ const RequestForm = () => {
                 />
               </div>
 
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Estado *</label>
+                  <Select
+                    value={formData.estado}
+                    onValueChange={(v) => {
+                      setLocLoading("estado");
+                      setFormData({ ...formData, estado: v, cidade: "", bairro: "" });
+                      setTimeout(() => setLocLoading(null), 150);
+                    }}
+                  >
+                    <SelectTrigger>
+                      {locLoading === "estado" ? (
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="Selecione o estado" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BRAZIL_STATES.map((s) => (
+                        <SelectItem key={s.uf} value={s.uf}>
+                          {s.uf} - {s.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Cidade *</label>
+                  <Select
+                    value={formData.cidade}
+                    onValueChange={(v) => {
+                      setLocLoading("cidade");
+                      setFormData({ ...formData, cidade: v, bairro: "" });
+                      setTimeout(() => setLocLoading(null), 150);
+                    }}
+                    disabled={!formData.estado || cities.length === 0}
+                  >
+                    <SelectTrigger>
+                      {locLoading === "cidade" ? (
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="Selecione a cidade" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {cities.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">Bairro preferido *</label>
-                <Select value={formData.bairro} onValueChange={(v) => setFormData({ ...formData, bairro: v })}>
+                <Select
+                  value={formData.bairro}
+                  onValueChange={(v) => setFormData({ ...formData, bairro: v })}
+                  disabled={!formData.cidade}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Escolha o bairro" />
+                    <SelectValue placeholder="Selecione o bairro" />
                   </SelectTrigger>
                   <SelectContent>
-                    {bairros.map(b => (
-                      <SelectItem key={b} value={b.toLowerCase()}>{b}</SelectItem>
+                    {neighborhoods.map((b) => (
+                      <SelectItem key={b} value={b}>{b}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
