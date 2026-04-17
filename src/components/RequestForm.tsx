@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity } from "@/lib/locations";
+import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity, OTHER_NEIGHBORHOOD } from "@/lib/locations";
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
 
