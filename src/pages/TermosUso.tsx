@@ -8,10 +8,10 @@ const TermosUso = () => {
           <p>Última atualização: {new Date().toLocaleDateString('pt-BR')}</p>
 
           <h2 className="text-xl font-semibold text-foreground">1. Aceitação dos Termos</h2>
-          <p>Ao utilizar a plataforma SLZ Imóveis, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p>
+          <p>Ao utilizar a plataforma Brazuka Imóveis, você concorda com estes Termos de Uso. Caso não concorde, não utilize a plataforma.</p>
 
           <h2 className="text-xl font-semibold text-foreground">2. Descrição do Serviço</h2>
-          <p>A SLZ Imóveis é uma plataforma que conecta compradores de imóveis a corretores na cidade de São Luís. Compradores publicam pedidos com suas necessidades e corretores enviam propostas de imóveis compatíveis.</p>
+          <p>A Brazuka Imóveis é uma plataforma que conecta compradores de imóveis a corretores em todo o Brasil. Compradores publicam pedidos com suas necessidades e corretores enviam propostas de imóveis compatíveis.</p>
 
           <h2 className="text-xl font-semibold text-foreground">3. Responsabilidades da Plataforma</h2>
           <p>A plataforma atua exclusivamente como intermediadora de contato. Não nos responsabilizamos pela veracidade, condições ou cumprimento das propostas enviadas por corretores. As propostas são de inteira responsabilidade dos profissionais que as enviam.</p>
@@ -46,7 +46,7 @@ const TermosUso = () => {
           <p>Estes termos podem ser atualizados a qualquer momento. O uso continuado da plataforma após alterações implica aceitação dos novos termos.</p>
 
           <h2 className="text-xl font-semibold text-foreground">10. Contato</h2>
-          <p>Para dúvidas, entre em contato: contato@slzimoveis.com.br</p>
+          <p>Para dúvidas, entre em contato: contato@brazukaimoveis.com.br</p>
         </div>
       </div>
     </div>

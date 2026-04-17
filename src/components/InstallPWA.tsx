@@ -42,7 +42,7 @@ const InstallPWA = () => {
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50 bg-card border border-border rounded-xl shadow-lg p-4 flex items-center gap-3 animate-in slide-in-from-bottom-4">
       <div className="flex-1">
-        <p className="text-sm font-semibold text-foreground">Instalar slzimoveis</p>
+        <p className="text-sm font-semibold text-foreground">Instalar Brazuka Imóveis</p>
         <p className="text-xs text-muted-foreground">Acesse mais rápido direto da tela inicial</p>
       </div>
       <Button size="sm" onClick={handleInstall} className="gap-1.5">

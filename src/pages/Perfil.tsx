@@ -318,7 +318,7 @@ const Perfil = () => {
                       <Input
                         value={form.area}
                         onChange={(e) => setForm({ ...form, area: e.target.value })}
-                        placeholder="Ex: São Luís - Calhau, Renascença, Cohama"
+                        placeholder="Ex: São Paulo - Pinheiros, Vila Madalena, Moema"
                       />
                     </div>
 

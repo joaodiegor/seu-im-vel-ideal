@@ -26,7 +26,7 @@ const PoliticaPrivacidade = () => {
           <p>Seus dados são armazenados em servidores seguros com criptografia. Adotamos medidas técnicas e organizacionais para proteger suas informações contra acesso não autorizado.</p>
 
           <h2 className="text-xl font-semibold text-foreground">5. Seus direitos</h2>
-          <p>Você pode solicitar acesso, correção ou exclusão dos seus dados pessoais a qualquer momento entrando em contato conosco pelo e-mail contato@slzimoveis.com.br.</p>
+          <p>Você pode solicitar acesso, correção ou exclusão dos seus dados pessoais a qualquer momento entrando em contato conosco pelo e-mail contato@brazukaimoveis.com.br.</p>
 
           <h2 className="text-xl font-semibold text-foreground">6. Cookies e notificações</h2>
           <p>A plataforma pode utilizar cookies para melhorar a navegação. As notificações push são opcionais e podem ser desativadas nas configurações do navegador ou dispositivo.</p>
@@ -35,7 +35,7 @@ const PoliticaPrivacidade = () => {
           <p>Esta política pode ser atualizada periodicamente. Recomendamos que você a consulte regularmente.</p>
 
           <h2 className="text-xl font-semibold text-foreground">8. Contato</h2>
-          <p>Para dúvidas sobre esta política, entre em contato: contato@slzimoveis.com.br</p>
+          <p>Para dúvidas sobre esta política, entre em contato: contato@brazukaimoveis.com.br</p>
         </div>
       </div>
     </div>
