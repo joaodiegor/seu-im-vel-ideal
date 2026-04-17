@@ -277,7 +277,7 @@ const RequestForm = () => {
                 <label className="block text-sm font-medium text-foreground mb-1.5">Bairro preferido *</label>
                 <Select
                   value={formData.bairro}
-                  onValueChange={(v) => setFormData({ ...formData, bairro: v })}
+                  onValueChange={(v) => setFormData({ ...formData, bairro: v, bairro_outro: "" })}
                   disabled={!formData.cidade}
                 >
                   <SelectTrigger>
@@ -289,6 +289,14 @@ const RequestForm = () => {
                     ))}
                   </SelectContent>
                 </Select>
+                {formData.bairro === OTHER_NEIGHBORHOOD && (
+                  <Input
+                    className="mt-2"
+                    placeholder="Digite o nome do bairro"
+                    value={formData.bairro_outro}
+                    onChange={(e) => setFormData({ ...formData, bairro_outro: e.target.value })}
+                  />
+                )}
               </div>
 
               <div>
