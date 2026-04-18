@@ -251,6 +251,22 @@ const PainelCorretor = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Buscar por bairro, nome ou detalhe..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
+            <div className="w-full sm:w-56">
+              <Select value={filterState} onValueChange={setFilterState}>
+                <SelectTrigger>
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {BRAZIL_STATES.map((s) => (
+                    <SelectItem key={s.uf} value={s.uf}>
+                      {s.name} ({s.uf})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="w-full sm:w-48">
               <Select value={filterType} onValueChange={setFilterType}>
                 <SelectTrigger>
