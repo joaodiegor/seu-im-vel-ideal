@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, CheckCircle, MessageSquare, Pencil, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,7 @@ const PainelCorretor = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [filterState, setFilterState] = useState<string>(profile?.state || "all");
 
   // Proposal form modal
   const [formOpen, setFormOpen] = useState(false);
@@ -206,6 +208,12 @@ const PainelCorretor = () => {
     setFormOpen(true);
   };
 
+  // Extract state UF from neighborhood format "Bairro, Cidade/UF"
+  const extractState = (neighborhood: string): string | null => {
+    const match = neighborhood.match(/\/([A-Z]{2})\s*$/);
+    return match ? match[1] : null;
+  };
+
   const filtered = requests.filter((r) => {
     const matchesSearch =
       !search ||
@@ -213,7 +221,8 @@ const PainelCorretor = () => {
       r.requester_name.toLowerCase().includes(search.toLowerCase()) ||
       (r.details && r.details.toLowerCase().includes(search.toLowerCase()));
     const matchesType = filterType === "all" || r.property_type === filterType;
-    return matchesSearch && matchesType;
+    const matchesState = filterState === "all" || extractState(r.neighborhood) === filterState;
+    return matchesSearch && matchesType && matchesState;
   });
 
   const pendingProposals = brokerProposals.filter((p) => p.status === "pending");
@@ -241,6 +250,22 @@ const PainelCorretor = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Buscar por bairro, nome ou detalhe..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
+            </div>
+            <div className="w-full sm:w-56">
+              <Select value={filterState} onValueChange={setFilterState}>
+                <SelectTrigger>
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <SelectValue placeholder="Estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {BRAZIL_STATES.map((s) => (
+                    <SelectItem key={s.uf} value={s.uf}>
+                      {s.name} ({s.uf})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="w-full sm:w-48">
               <Select value={filterType} onValueChange={setFilterType}>
