@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Home, Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
+import { Home, Mail, Lock, User, Phone, ArrowLeft, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
@@ -25,6 +27,7 @@ const Auth = () => {
     fullName: "",
     phone: "",
     creci: "",
+    state: "",
   });
 
   useEffect(() => {
@@ -37,6 +40,11 @@ const Auth = () => {
 
     try {
       if (mode === "signup") {
+        if (userType === "broker" && !form.state) {
+          toast.error("Selecione seu estado de atuação.");
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
@@ -56,6 +64,7 @@ const Auth = () => {
             user_type: userType,
             phone: form.phone || null,
             creci: userType === "broker" ? form.creci || null : null,
+            state: userType === "broker" ? form.state || null : null,
             full_name: form.fullName,
           }).eq("user_id", newUser.id);
         }

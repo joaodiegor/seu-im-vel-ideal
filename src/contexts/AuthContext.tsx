@@ -13,6 +13,7 @@ interface Profile {
   bio: string | null;
   specialty: string | null;
   area: string | null;
+  state: string | null;
 }
 
 interface AuthContextType {
