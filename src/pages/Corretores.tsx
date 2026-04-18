@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -8,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
 import { Star, Award, MapPin, MessageCircle, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -21,12 +24,16 @@ interface BrokerWithStats {
   phone: string | null;
   bio: string | null;
   agency: string | null;
+  state: string | null;
   avg_rating: number;
   review_count: number;
 }
 
 const Corretores = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialState = searchParams.get("state") || "all";
+  const [stateFilter, setStateFilter] = useState<string>(initialState);
   const [brokers, setBrokers] = useState<BrokerWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
@@ -43,7 +50,7 @@ const Corretores = () => {
 
     const { data: brokerProfiles } = await supabase
       .from("profiles")
-      .select("user_id, full_name, specialty, area, avatar_url, phone, bio, agency")
+      .select("user_id, full_name, specialty, area, avatar_url, phone, bio, agency, state")
       .eq("user_type", "broker");
 
     if (!brokerProfiles || brokerProfiles.length === 0) {
