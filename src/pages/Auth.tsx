@@ -66,7 +66,7 @@ const Auth = () => {
             creci: userType === "broker" ? form.creci || null : null,
             state: userType === "broker" ? form.state || null : null,
             full_name: form.fullName,
-          }).eq("user_id", newUser.id);
+          } as any).eq("user_id", newUser.id);
         }
 
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");

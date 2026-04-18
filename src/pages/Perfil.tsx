@@ -167,7 +167,7 @@ const Perfil = () => {
         creci: form.creci.trim() || null,
         state: userType === "broker" ? (form.state || null) : null,
         user_type: userType,
-      })
+      } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
