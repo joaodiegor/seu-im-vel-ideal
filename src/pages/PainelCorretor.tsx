@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import { Home, MapPin, DollarSign, BedDouble, Clock, Search, Filter, Send, CheckCircle, MessageSquare, Pencil, MessageCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,7 @@ const PainelCorretor = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const [filterState, setFilterState] = useState<string>(profile?.state || "all");
 
   // Proposal form modal
   const [formOpen, setFormOpen] = useState(false);
@@ -206,6 +208,12 @@ const PainelCorretor = () => {
     setFormOpen(true);
   };
 
+  // Extract state UF from neighborhood format "Bairro, Cidade/UF"
+  const extractState = (neighborhood: string): string | null => {
+    const match = neighborhood.match(/\/([A-Z]{2})\s*$/);
+    return match ? match[1] : null;
+  };
+
   const filtered = requests.filter((r) => {
     const matchesSearch =
       !search ||
@@ -213,7 +221,8 @@ const PainelCorretor = () => {
       r.requester_name.toLowerCase().includes(search.toLowerCase()) ||
       (r.details && r.details.toLowerCase().includes(search.toLowerCase()));
     const matchesType = filterType === "all" || r.property_type === filterType;
-    return matchesSearch && matchesType;
+    const matchesState = filterState === "all" || extractState(r.neighborhood) === filterState;
+    return matchesSearch && matchesType && matchesState;
   });
 
   const pendingProposals = brokerProposals.filter((p) => p.status === "pending");
