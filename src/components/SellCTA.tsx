@@ -1,10 +1,19 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Building2, ArrowRight } from "lucide-react";
+import { Building2, ArrowRight, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
 
 const SellCTA = () => {
   const navigate = useNavigate();
+  const [state, setState] = useState<string>("");
+
+  const handleSearch = () => {
+    if (state) navigate(`/corretores?state=${state}`);
+    else navigate("/corretores");
+  };
 
   return (
     <section className="py-24 bg-gradient-hero relative overflow-hidden">
@@ -31,15 +40,34 @@ const SellCTA = () => {
             Entre em contato com os melhores corretores da região. Encontre profissionais avaliados por clientes reais e negocie diretamente.
           </p>
 
-          <Button
-            variant="hero"
-            size="lg"
-            className="text-base px-8 py-6"
-            onClick={() => navigate("/corretores")}
-          >
-            Encontrar corretores
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+          <div className="bg-card/95 backdrop-blur rounded-2xl p-4 sm:p-5 max-w-xl mx-auto shadow-elevated">
+            <label className="text-sm font-medium text-foreground flex items-center gap-1.5 mb-2 text-left">
+              <MapPin className="h-4 w-4 text-primary" />
+              Buscar corretores por estado
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Select value={state} onValueChange={setState}>
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Selecione um estado (opcional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  {BRAZIL_STATES.map((s) => (
+                    <SelectItem key={s.uf} value={s.uf}>
+                      {s.name} ({s.uf})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="hero"
+                size="lg"
+                onClick={handleSearch}
+              >
+                Buscar
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </div>
+          </div>
         </motion.div>
       </div>
     </section>
