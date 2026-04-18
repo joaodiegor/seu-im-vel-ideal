@@ -323,6 +323,25 @@ const Perfil = () => {
                     <div>
                       <label className="block text-sm font-medium text-foreground mb-1.5">
                         <MapPin className="inline h-4 w-4 mr-1.5 text-primary" />
+                        Estado de atuação *
+                      </label>
+                      <Select value={form.state} onValueChange={(v) => setForm({ ...form, state: v })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione seu estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BRAZIL_STATES.map((s) => (
+                            <SelectItem key={s.uf} value={s.uf}>
+                              {s.name} ({s.uf})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1.5">
+                        <MapPin className="inline h-4 w-4 mr-1.5 text-primary" />
                         Área de atuação
                       </label>
                       <Input
