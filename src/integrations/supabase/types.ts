@@ -150,6 +150,7 @@ export type Database = {
           id: string
           phone: string | null
           specialty: string | null
+          state: string | null
           updated_at: string
           user_id: string
           user_type: Database["public"]["Enums"]["user_type"]
@@ -166,6 +167,7 @@ export type Database = {
           id?: string
           phone?: string | null
           specialty?: string | null
+          state?: string | null
           updated_at?: string
           user_id: string
           user_type?: Database["public"]["Enums"]["user_type"]
@@ -182,6 +184,7 @@ export type Database = {
           id?: string
           phone?: string | null
           specialty?: string | null
+          state?: string | null
           updated_at?: string
           user_id?: string
           user_type?: Database["public"]["Enums"]["user_type"]
