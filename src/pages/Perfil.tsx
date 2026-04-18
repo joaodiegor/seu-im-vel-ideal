@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
 import { Camera, Save, Loader2, User, Phone, MapPin, Award, FileText, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { isPushSupported, subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/pushNotifications";
@@ -42,6 +44,7 @@ const Perfil = () => {
     area: "",
     specialty: "",
     creci: "",
+    state: "",
   });
 
   useEffect(() => {
@@ -66,6 +69,7 @@ const Perfil = () => {
         area: profile.area || "",
         specialty: profile.specialty || "",
         creci: profile.creci || "",
+        state: (profile as any).state || "",
       });
       setAvatarUrl(profile.avatar_url);
     }
@@ -145,6 +149,11 @@ const Perfil = () => {
       return;
     }
 
+    if (userType === "broker" && !form.state) {
+      toast.error("Selecione seu estado de atuação.");
+      return;
+    }
+
     setSaving(true);
 
     const { error } = await supabase
@@ -156,8 +165,9 @@ const Perfil = () => {
         area: form.area.trim() || null,
         specialty: form.specialty.trim() || null,
         creci: form.creci.trim() || null,
+        state: userType === "broker" ? (form.state || null) : null,
         user_type: userType,
-      })
+      } as any)
       .eq("user_id", user.id);
 
     setSaving(false);
@@ -308,6 +318,25 @@ const Perfil = () => {
                         maxLength={20}
                         required
                       />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-1.5">
+                        <MapPin className="inline h-4 w-4 mr-1.5 text-primary" />
+                        Estado de atuação *
+                      </label>
+                      <Select value={form.state} onValueChange={(v) => setForm({ ...form, state: v })}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Selecione seu estado" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {BRAZIL_STATES.map((s) => (
+                            <SelectItem key={s.uf} value={s.uf}>
+                              {s.name} ({s.uf})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
 
                     <div>

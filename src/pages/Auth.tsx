@@ -4,7 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Home, Mail, Lock, User, Phone, ArrowLeft } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
+import { Home, Mail, Lock, User, Phone, ArrowLeft, MapPin } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
@@ -25,6 +27,7 @@ const Auth = () => {
     fullName: "",
     phone: "",
     creci: "",
+    state: "",
   });
 
   useEffect(() => {
@@ -37,6 +40,11 @@ const Auth = () => {
 
     try {
       if (mode === "signup") {
+        if (userType === "broker" && !form.state) {
+          toast.error("Selecione seu estado de atuação.");
+          setLoading(false);
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
@@ -56,8 +64,9 @@ const Auth = () => {
             user_type: userType,
             phone: form.phone || null,
             creci: userType === "broker" ? form.creci || null : null,
+            state: userType === "broker" ? form.state || null : null,
             full_name: form.fullName,
-          }).eq("user_id", newUser.id);
+          } as any).eq("user_id", newUser.id);
         }
 
         toast.success("Conta criada! Verifique seu e-mail para confirmar.");
@@ -172,15 +181,36 @@ const Auth = () => {
               </div>
 
               {userType === "broker" && (
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">CRECI</label>
-                  <Input
-                    placeholder="Número do CRECI"
-                    value={form.creci}
-                    onChange={(e) => setForm({ ...form, creci: e.target.value })}
-                    required
-                  />
-                </div>
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">CRECI</label>
+                    <Input
+                      placeholder="Número do CRECI"
+                      value={form.creci}
+                      onChange={(e) => setForm({ ...form, creci: e.target.value })}
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-1.5">
+                      <MapPin className="inline h-4 w-4 mr-1.5 text-primary" />
+                      Estado de atuação
+                    </label>
+                    <Select value={form.state} onValueChange={(v) => setForm({ ...form, state: v })}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione seu estado" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {BRAZIL_STATES.map((s) => (
+                          <SelectItem key={s.uf} value={s.uf}>
+                            {s.name} ({s.uf})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
               )}
             </>
           )}

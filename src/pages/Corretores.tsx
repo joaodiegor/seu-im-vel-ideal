@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import Navbar from "@/components/Navbar";
@@ -8,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { BRAZIL_STATES } from "@/lib/locations";
 import { Star, Award, MapPin, MessageCircle, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -21,12 +24,16 @@ interface BrokerWithStats {
   phone: string | null;
   bio: string | null;
   agency: string | null;
+  state: string | null;
   avg_rating: number;
   review_count: number;
 }
 
 const Corretores = () => {
   const { user } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialState = searchParams.get("state") || "all";
+  const [stateFilter, setStateFilter] = useState<string>(initialState);
   const [brokers, setBrokers] = useState<BrokerWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [chatOpen, setChatOpen] = useState(false);
@@ -43,7 +50,7 @@ const Corretores = () => {
 
     const { data: brokerProfiles } = await supabase
       .from("profiles")
-      .select("user_id, full_name, specialty, area, avatar_url, phone, bio, agency")
+      .select("user_id, full_name, specialty, area, avatar_url, phone, bio, agency, state")
       .eq("user_type", "broker");
 
     if (!brokerProfiles || brokerProfiles.length === 0) {
@@ -127,6 +134,19 @@ const Corretores = () => {
     window.open(`https://wa.me/${number}?text=${encodeURIComponent(`Olá ${name}, encontrei seu perfil na plataforma e gostaria de conversar sobre a venda de um imóvel.`)}`, "_blank");
   };
 
+  const filteredBrokers = useMemo(() => {
+    if (stateFilter === "all") return brokers;
+    return brokers.filter((b) => b.state === stateFilter);
+  }, [brokers, stateFilter]);
+
+  const handleStateChange = (v: string) => {
+    setStateFilter(v);
+    const next = new URLSearchParams(searchParams);
+    if (v === "all") next.delete("state");
+    else next.set("state", v);
+    setSearchParams(next, { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -154,6 +174,34 @@ const Corretores = () => {
 
       <section className="py-16">
         <div className="container mx-auto px-6">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-foreground font-display">
+                {filteredBrokers.length} {filteredBrokers.length === 1 ? "corretor encontrado" : "corretores encontrados"}
+              </h2>
+              {stateFilter !== "all" && (
+                <p className="text-sm text-muted-foreground">
+                  Filtrando por estado: {BRAZIL_STATES.find((s) => s.uf === stateFilter)?.name || stateFilter}
+                </p>
+              )}
+            </div>
+            <div className="w-full sm:w-72">
+              <Select value={stateFilter} onValueChange={handleStateChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtrar por estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {BRAZIL_STATES.map((s) => (
+                    <SelectItem key={s.uf} value={s.uf}>
+                      {s.name} ({s.uf})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -172,13 +220,17 @@ const Corretores = () => {
                 </Card>
               ))}
             </div>
-          ) : brokers.length === 0 ? (
+          ) : filteredBrokers.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-muted-foreground text-lg">Ainda não há corretores cadastrados.</p>
+              <p className="text-muted-foreground text-lg">
+                {brokers.length === 0
+                  ? "Ainda não há corretores cadastrados."
+                  : "Nenhum corretor encontrado para o estado selecionado."}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {brokers.map((broker, index) => (
+              {filteredBrokers.map((broker, index) => (
                 <motion.div
                   key={broker.user_id}
                   initial={{ opacity: 0, y: 20 }}
@@ -221,6 +273,12 @@ const Corretores = () => {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Award className="h-4 w-4 text-primary shrink-0" />
                             <span>{broker.specialty}</span>
+                          </div>
+                        )}
+                        {broker.state && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <MapPin className="h-4 w-4 text-primary shrink-0" />
+                            <span>{BRAZIL_STATES.find((s) => s.uf === broker.state)?.name || broker.state}</span>
                           </div>
                         )}
                         {broker.area && (
