@@ -174,6 +174,34 @@ const Corretores = () => {
 
       <section className="py-16">
         <div className="container mx-auto px-6">
+          <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h2 className="text-xl font-bold text-foreground font-display">
+                {filteredBrokers.length} {filteredBrokers.length === 1 ? "corretor encontrado" : "corretores encontrados"}
+              </h2>
+              {stateFilter !== "all" && (
+                <p className="text-sm text-muted-foreground">
+                  Filtrando por estado: {BRAZIL_STATES.find((s) => s.uf === stateFilter)?.name || stateFilter}
+                </p>
+              )}
+            </div>
+            <div className="w-full sm:w-72">
+              <Select value={stateFilter} onValueChange={handleStateChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filtrar por estado" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {BRAZIL_STATES.map((s) => (
+                    <SelectItem key={s.uf} value={s.uf}>
+                      {s.name} ({s.uf})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -192,13 +220,17 @@ const Corretores = () => {
                 </Card>
               ))}
             </div>
-          ) : brokers.length === 0 ? (
+          ) : filteredBrokers.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-muted-foreground text-lg">Ainda não há corretores cadastrados.</p>
+              <p className="text-muted-foreground text-lg">
+                {brokers.length === 0
+                  ? "Ainda não há corretores cadastrados."
+                  : "Nenhum corretor encontrado para o estado selecionado."}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {brokers.map((broker, index) => (
+              {filteredBrokers.map((broker, index) => (
                 <motion.div
                   key={broker.user_id}
                   initial={{ opacity: 0, y: 20 }}
