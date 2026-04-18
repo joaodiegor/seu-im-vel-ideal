@@ -134,6 +134,19 @@ const Corretores = () => {
     window.open(`https://wa.me/${number}?text=${encodeURIComponent(`Olá ${name}, encontrei seu perfil na plataforma e gostaria de conversar sobre a venda de um imóvel.`)}`, "_blank");
   };
 
+  const filteredBrokers = useMemo(() => {
+    if (stateFilter === "all") return brokers;
+    return brokers.filter((b) => b.state === stateFilter);
+  }, [brokers, stateFilter]);
+
+  const handleStateChange = (v: string) => {
+    setStateFilter(v);
+    const next = new URLSearchParams(searchParams);
+    if (v === "all") next.delete("state");
+    else next.set("state", v);
+    setSearchParams(next, { replace: true });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
