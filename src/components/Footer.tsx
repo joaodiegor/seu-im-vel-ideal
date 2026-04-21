@@ -8,7 +8,7 @@ const Footer = () => {
           <div>
             <div className="flex items-baseline gap-1.5 mb-4">
               <span className="font-display text-3xl font-bold text-background tracking-tight leading-none">Brazuka</span>
-              <span className="font-display text-xl font-light italic text-accent leading-none">Imóveis</span>
+              <span className="font-display text-base font-light text-accent leading-none">Imóveis</span>
             </div>
             <p className="text-background/60 text-sm leading-relaxed">
               A plataforma que inverte o jogo imobiliário no Brasil. Você diz o que quer, corretores competem para
