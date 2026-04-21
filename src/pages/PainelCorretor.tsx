@@ -305,7 +305,7 @@ const PainelCorretor = () => {
             </div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((req, i) => {
+              {filtered.slice(0, 20).map((req, i) => {
                 const alreadySent = sentProposalIds.has(req.id);
                 const count = proposalCounts[req.id] || 0;
                 const isFull = count >= 20;
