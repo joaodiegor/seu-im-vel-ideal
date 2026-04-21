@@ -21,7 +21,7 @@ const Navbar = () => {
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <a href="/" className="flex items-baseline gap-1.5 group">
           <span className="font-display text-3xl font-bold text-primary tracking-tight leading-none">Brazuka</span>
-          <span className="font-display text-xl font-light italic text-accent leading-none">Imóveis</span>
+          <span className="font-display text-base font-light text-accent leading-none">Imóveis</span>
         </a>
 
         {/* Desktop */}
