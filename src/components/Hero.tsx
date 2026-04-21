@@ -4,6 +4,7 @@ import { Search, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import heroCoupleHouse from "@/assets/hero-couple-house.jpg";
 
 const Hero = () => {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ const Hero = () => {
       }} />
 
       <div className="container relative z-10 mx-auto px-6 py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
         <div className="max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -83,6 +85,22 @@ const Hero = () => {
               <span>+{brokerCount} corretores já cadastrados</span>
             </motion.div>
           )}
+        </div>
+
+          <motion.div
+            className="hidden lg:block relative"
+            initial={{ opacity: 0, scale: 0.9, x: 30 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}>
+            <div className="absolute -inset-4 bg-gradient-to-tr from-coral/30 to-accent/20 rounded-3xl blur-2xl" />
+            <img
+              src={heroCoupleHouse}
+              alt="Casal entrando em sua nova casa"
+              width={1024}
+              height={1024}
+              className="relative rounded-2xl shadow-2xl w-full h-auto object-cover ring-1 ring-primary-foreground/10"
+            />
+          </motion.div>
         </div>
       </div>
     </section>);
