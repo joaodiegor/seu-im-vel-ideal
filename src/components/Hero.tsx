@@ -24,8 +24,31 @@ const Hero = () => {
         backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
       }} />
 
+      {/* Atmospheric couple-house illustration blended into the background */}
+      <motion.div
+        className="absolute inset-y-0 right-0 w-full lg:w-[65%] pointer-events-none"
+        initial={{ opacity: 0, scale: 1.05 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.4, ease: "easeOut" }}
+      >
+        <img
+          src={heroCoupleHouse}
+          alt="Casal entrando em sua nova casa"
+          width={1280}
+          height={1280}
+          className="absolute inset-0 w-full h-full object-cover object-center opacity-80"
+          style={{
+            WebkitMaskImage:
+              "radial-gradient(ellipse at 70% 55%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0) 85%)",
+            maskImage:
+              "radial-gradient(ellipse at 70% 55%, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0) 85%)",
+          }}
+        />
+        {/* Left-side gradient fade so text remains legible */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/60 to-transparent" />
+      </motion.div>
+
       <div className="container relative z-10 mx-auto px-6 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
         <div className="max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -85,22 +108,6 @@ const Hero = () => {
               <span>+{brokerCount} corretores já cadastrados</span>
             </motion.div>
           )}
-        </div>
-
-          <motion.div
-            className="hidden lg:block relative"
-            initial={{ opacity: 0, scale: 0.9, x: 30 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}>
-            <div className="absolute -inset-4 bg-gradient-to-tr from-coral/30 to-accent/20 rounded-3xl blur-2xl" />
-            <img
-              src={heroCoupleHouse}
-              alt="Casal entrando em sua nova casa"
-              width={1024}
-              height={1024}
-              className="relative rounded-2xl shadow-2xl w-full h-auto object-cover ring-1 ring-primary-foreground/10"
-            />
-          </motion.div>
         </div>
       </div>
     </section>);
