@@ -19,8 +19,9 @@ const Navbar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2">
-          <img src="/images/logo-color.png" alt="Brazuka Imóveis" className="h-20" />
+        <a href="/" className="flex items-baseline gap-1.5 group">
+          <span className="font-display text-3xl font-bold text-primary tracking-tight leading-none">Brazuka</span>
+          <span className="font-display text-xl font-light italic text-accent leading-none">Imóveis</span>
         </a>
 
         {/* Desktop */}
