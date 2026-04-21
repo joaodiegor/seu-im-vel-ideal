@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
+  const { user } = useAuth();
   const [brokerCount, setBrokerCount] = useState<number>(0);
 
   useEffect(() => {
