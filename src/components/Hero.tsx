@@ -28,18 +28,11 @@ const Hero = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-wrap items-center gap-3 mb-6">
+            transition={{ duration: 0.6 }}>
             
-            <span className="inline-block rounded-full bg-accent/20 px-4 py-1.5 text-sm font-medium text-accent-foreground backdrop-blur-sm border border-accent-foreground/10">
+            <span className="inline-block rounded-full bg-accent/20 px-4 py-1.5 text-sm font-medium text-accent-foreground mb-6 backdrop-blur-sm border border-accent-foreground/10">
               🇧🇷 Em todo o Brasil
             </span>
-            <button
-              onClick={() => document.getElementById('publicar')?.scrollIntoView({ behavior: 'smooth' })}
-              className="inline-flex items-center gap-1.5 rounded-full bg-coral/90 px-4 py-1.5 text-sm font-medium text-accent-foreground backdrop-blur-sm border border-coral hover:bg-coral transition-colors">
-              <Search className="h-3.5 w-3.5" />
-              Publicar pedido
-            </button>
           </motion.div>
 
           <motion.h1
