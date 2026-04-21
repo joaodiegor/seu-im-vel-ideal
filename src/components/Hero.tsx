@@ -66,10 +66,12 @@ const Hero = () => {
               <Search className="mr-2 h-5 w-5" />
               Publicar meu pedido
             </Button>
-            <Button variant="hero-outline" size="lg" className="text-base px-8 py-6" onClick={() => window.location.href = '/auth'}>
-              Entrar / Cadastrar
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            {!user && (
+              <Button variant="hero-outline" size="lg" className="text-base px-8 py-6" onClick={() => window.location.href = '/auth'}>
+                Entrar / Cadastrar
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            )}
           </motion.div>
 
           {brokerCount > 0 && (
