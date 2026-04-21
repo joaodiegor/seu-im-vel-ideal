@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Search, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Hero = () => {
   const [brokerCount, setBrokerCount] = useState<number>(0);
