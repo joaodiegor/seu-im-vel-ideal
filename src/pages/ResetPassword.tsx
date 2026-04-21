@@ -76,8 +76,9 @@ const ResetPassword = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <a href="/" className="inline-flex items-center gap-2 mb-6">
-            <img src="/images/logo-color.png" alt="Brazuka Imóveis" className="h-16" />
+          <a href="/" className="inline-flex items-baseline gap-1.5 mb-6">
+            <span className="font-display text-4xl font-bold text-primary tracking-tight leading-none">Brazuka</span>
+            <span className="font-display text-2xl font-light italic text-accent leading-none">Imóveis</span>
           </a>
           <h1 className="text-2xl font-bold text-foreground font-display">
             {success ? "Senha redefinida!" : "Redefinir senha"}
