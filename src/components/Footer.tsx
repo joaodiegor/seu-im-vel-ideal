@@ -6,8 +6,9 @@ const Footer = () => {
       <div className="container mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
           <div>
-            <div className="flex items-center gap-2 mb-4 bg-background rounded-xl px-4 py-2 inline-flex w-fit">
-              <img src="/images/logo-color.png" alt="Brazuka Imóveis" className="h-12" />
+            <div className="flex items-baseline gap-1.5 mb-4">
+              <span className="font-display text-3xl font-bold text-background tracking-tight leading-none">Brazuka</span>
+              <span className="font-display text-xl font-light italic text-accent leading-none">Imóveis</span>
             </div>
             <p className="text-background/60 text-sm leading-relaxed">
               A plataforma que inverte o jogo imobiliário no Brasil. Você diz o que quer, corretores competem para
