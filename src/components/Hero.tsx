@@ -26,12 +26,16 @@ const Hero = () => {
   }, []);
 
   const triggerPrefillAndScroll = (tipo: string, estado: string, cidade: string) => {
-    window.dispatchEvent(new CustomEvent("prefill-request", {
-      detail: { tipo, estado, cidade },
-    }));
+    const detail = { tipo, estado, cidade };
+    (window as any).__pendingPrefill = detail;
+    window.dispatchEvent(new CustomEvent("prefill-request", { detail }));
     setTimeout(() => {
       document.getElementById("publicar")?.scrollIntoView({ behavior: "smooth" });
+      window.dispatchEvent(new CustomEvent("prefill-request", { detail }));
     }, 50);
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("prefill-request", { detail }));
+    }, 600);
   };
 
   const handleQuickSearch = () => {
