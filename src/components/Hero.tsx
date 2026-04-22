@@ -25,13 +25,23 @@ const Hero = () => {
       .then(({ count }) => setBrokerCount(count ?? 0));
   }, []);
 
-  const handleQuickSearch = () => {
+  const triggerPrefillAndScroll = (tipo: string, estado: string, cidade: string) => {
     window.dispatchEvent(new CustomEvent("prefill-request", {
-      detail: { tipo: quickTipo, estado: quickEstado, cidade: quickCidade },
+      detail: { tipo, estado, cidade },
     }));
     setTimeout(() => {
       document.getElementById("publicar")?.scrollIntoView({ behavior: "smooth" });
     }, 50);
+  };
+
+  const handleQuickSearch = () => {
+    triggerPrefillAndScroll(quickTipo, quickEstado, quickCidade);
+  };
+
+  const handleCityChange = (v: string) => {
+    setQuickCidade(v);
+    // Auto-expand: ao selecionar cidade, leva o usuário aos demais campos do pedido
+    triggerPrefillAndScroll(quickTipo, quickEstado, v);
   };
 
   return (
