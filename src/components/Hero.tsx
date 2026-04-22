@@ -80,83 +80,84 @@ const Hero = () => {
             Descreva o imóvel dos seus sonhos e receba propostas exclusivas dos melhores corretores do Brasil.
           </motion.p>
 
-          {/* Quick search box - VivaReal style */}
-          <motion.div
-            className="bg-card rounded-2xl p-4 sm:p-5 shadow-elevated border border-border/50"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Tipo</label>
-                <Select value={quickTipo} onValueChange={setQuickTipo}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Qualquer" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="apartamento">Apartamento</SelectItem>
-                    <SelectItem value="casa">Casa</SelectItem>
-                    <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
-                    <SelectItem value="comercial">Comercial</SelectItem>
-                    <SelectItem value="terreno">Terreno / Lote</SelectItem>
-                  </SelectContent>
-                </Select>
+          {user && (
+            <motion.div
+              className="bg-card rounded-2xl p-4 sm:p-5 shadow-elevated border border-border/50"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.3 }}>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Tipo</label>
+                  <Select value={quickTipo} onValueChange={setQuickTipo}>
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Qualquer" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="apartamento">Apartamento</SelectItem>
+                      <SelectItem value="casa">Casa</SelectItem>
+                      <SelectItem value="casa_condominio">Casa de Condomínio</SelectItem>
+                      <SelectItem value="comercial">Comercial</SelectItem>
+                      <SelectItem value="terreno">Terreno / Lote</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Estado</label>
+                  <Select
+                    value={quickEstado}
+                    onValueChange={(v) => {
+                      setLocLoading("estado");
+                      setQuickEstado(v);
+                      setQuickCidade("");
+                      setTimeout(() => setLocLoading(null), 150);
+                    }}>
+                    <SelectTrigger className="h-12">
+                      {locLoading === "estado" ? (
+                        <span className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
+                        </span>
+                      ) : (
+                        <SelectValue placeholder="UF" />
+                      )}
+                    </SelectTrigger>
+                    <SelectContent>
+                      {BRAZIL_STATES.map((s) => (
+                        <SelectItem key={s.uf} value={s.uf}>{s.uf} - {s.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Cidade</label>
+                  <Select
+                    value={quickCidade}
+                    onValueChange={handleCityChange}
+                    disabled={!quickEstado || quickCities.length === 0}>
+                    <SelectTrigger className="h-12">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {quickCities.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Estado</label>
-                <Select
-                  value={quickEstado}
-                  onValueChange={(v) => {
-                    setLocLoading("estado");
-                    setQuickEstado(v);
-                    setQuickCidade("");
-                    setTimeout(() => setLocLoading(null), 150);
-                  }}>
-                  <SelectTrigger className="h-12">
-                    {locLoading === "estado" ? (
-                      <span className="flex items-center gap-2 text-muted-foreground">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Carregando...
-                      </span>
-                    ) : (
-                      <SelectValue placeholder="UF" />
-                    )}
-                  </SelectTrigger>
-                  <SelectContent>
-                    {BRAZIL_STATES.map((s) => (
-                      <SelectItem key={s.uf} value={s.uf}>{s.uf} - {s.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Cidade</label>
-                <Select
-                  value={quickCidade}
-                  onValueChange={handleCityChange}
-                  disabled={!quickEstado || quickCities.length === 0}>
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {quickCities.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <Button
-              variant="hero"
-              size="lg"
-              className="w-full mt-4 text-base py-6"
-              onClick={handleQuickSearch}>
-              <Search className="mr-2 h-5 w-5" />
-              Publicar meu pedido
-            </Button>
-          </motion.div>
+              <Button
+                variant="hero"
+                size="lg"
+                className="w-full mt-4 text-base py-6"
+                onClick={handleQuickSearch}>
+                <Search className="mr-2 h-5 w-5" />
+                Publicar meu pedido
+              </Button>
+            </motion.div>
+          )}
 
           {!user && (
             <motion.div
