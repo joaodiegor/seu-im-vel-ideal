@@ -134,7 +134,7 @@ const Hero = () => {
                 <label className="block text-xs font-semibold text-muted-foreground mb-1.5 uppercase tracking-wide">Cidade</label>
                 <Select
                   value={quickCidade}
-                  onValueChange={setQuickCidade}
+                  onValueChange={handleCityChange}
                   disabled={!quickEstado || quickCities.length === 0}>
                   <SelectTrigger className="h-12">
                     <SelectValue placeholder="Selecione" />
