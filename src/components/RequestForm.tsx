@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,22 @@ const RequestForm = () => {
     telefone_visivel: true,
   });
   const [locLoading, setLocLoading] = useState<"estado" | "cidade" | null>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail || {};
+      setFormData((prev) => ({
+        ...prev,
+        tipo: detail.tipo || prev.tipo,
+        estado: detail.estado || prev.estado,
+        cidade: detail.cidade || prev.cidade,
+        bairro: detail.estado || detail.cidade ? "" : prev.bairro,
+        bairro_outro: "",
+      }));
+    };
+    window.addEventListener("prefill-request", handler);
+    return () => window.removeEventListener("prefill-request", handler);
+  }, []);
 
   const cities = formData.estado ? getCitiesByState(formData.estado) : [];
   const neighborhoods = formData.cidade ? getNeighborhoodsByCity(formData.cidade) : [];
