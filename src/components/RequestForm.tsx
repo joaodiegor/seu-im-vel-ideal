@@ -37,8 +37,8 @@ const RequestForm = () => {
   const [locLoading, setLocLoading] = useState<"estado" | "cidade" | null>(null);
 
   useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail || {};
+    const applyPrefill = (detail: any) => {
+      if (!detail) return;
       setFormData((prev) => ({
         ...prev,
         tipo: detail.tipo || prev.tipo,
@@ -48,6 +48,8 @@ const RequestForm = () => {
         bairro_outro: "",
       }));
     };
+    applyPrefill((window as any).__pendingPrefill);
+    const handler = (e: Event) => applyPrefill((e as CustomEvent).detail);
     window.addEventListener("prefill-request", handler);
     return () => window.removeEventListener("prefill-request", handler);
   }, []);
