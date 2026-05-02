@@ -117,7 +117,7 @@ const Auth = () => {
         navigate("/");
       }
     } catch (error: any) {
-      toast.error(error.message || "Erro ao processar. Tente novamente.");
+      toast.error(translateAuthError(error.message || "") || "Erro ao processar. Tente novamente.");
     } finally {
       setLoading(false);
     }
