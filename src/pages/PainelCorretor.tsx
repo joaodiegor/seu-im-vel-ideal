@@ -121,22 +121,21 @@ const PainelCorretor = () => {
 
     const [requestsRes, proposalsRes] = await Promise.all([
       supabase
-        .from("property_requests")
+        .from("active_requests_public" as any)
         .select("id, property_type, neighborhood, bedrooms, max_budget, details, requester_name, name_visible, created_at")
-        .eq("status", "active")
         .order("created_at", { ascending: false }),
       supabase
         .from("proposals")
-        .select("id, request_id, message, price, property_link, broker_phone, status, created_at, property_requests(property_type, neighborhood, requester_name)")
+        .select("id, request_id, message, price, property_link, broker_phone, status, created_at")
         .eq("broker_id", user!.id)
         .order("created_at", { ascending: false }),
     ]);
 
     if (requestsRes.data) {
-      setRequests(requestsRes.data);
+      setRequests(requestsRes.data as any);
       // Fetch active proposal counts for each request
       const counts: Record<string, number> = {};
-      const countPromises = requestsRes.data.map(async (req) => {
+      const countPromises = (requestsRes.data as any[]).map(async (req: any) => {
         const { count } = await supabase
           .from("proposals")
           .select("id", { count: "exact", head: true })
@@ -147,10 +146,19 @@ const PainelCorretor = () => {
       await Promise.all(countPromises);
       setProposalCounts(counts);
     }
-    if (proposalsRes.data) {
-      const mapped = proposalsRes.data.map((p: any) => ({ ...p, request: p.property_requests }));
+    if (proposalsRes.data && proposalsRes.data.length > 0) {
+      const requestIds = Array.from(new Set(proposalsRes.data.map((p: any) => p.request_id)));
+      const { data: relatedRequests } = await supabase
+        .from("active_requests_public" as any)
+        .select("id, property_type, neighborhood, requester_name")
+        .in("id", requestIds);
+      const reqMap = new Map((relatedRequests || []).map((r: any) => [r.id, r]));
+      const mapped = proposalsRes.data.map((p: any) => ({ ...p, request: reqMap.get(p.request_id) || null }));
       setBrokerProposals(mapped);
       setSentProposalIds(new Set(mapped.map((p: any) => p.request_id)));
+    } else if (proposalsRes.data) {
+      setBrokerProposals([]);
+      setSentProposalIds(new Set());
     }
     // Fetch direct conversations
     if (user) {
