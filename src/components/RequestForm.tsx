@@ -66,8 +66,7 @@ const RequestForm = () => {
     e.preventDefault();
 
     if (!user) {
-      toast.error("Você precisa estar logado para publicar um pedido.");
-      navigate("/auth");
+      setAuthPromptOpen(true);
       return;
     }
 
