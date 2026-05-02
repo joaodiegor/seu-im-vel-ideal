@@ -20,6 +20,7 @@ const RequestForm = () => {
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [authPromptOpen, setAuthPromptOpen] = useState(false);
   const [formData, setFormData] = useState({
     tipo: "",
     estado: "",
