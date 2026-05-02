@@ -386,6 +386,16 @@ const RequestForm = () => {
                 </div>
               </div>
 
+              {!user && (
+                <Alert className="border-coral/40 bg-coral/5">
+                  <AlertCircle className="h-4 w-4 text-coral" />
+                  <AlertTitle>Faça login para publicar</AlertTitle>
+                  <AlertDescription>
+                    Você precisa estar logado para enviar seu pedido. É rápido e gratuito.
+                  </AlertDescription>
+                </Alert>
+              )}
+
               <Button type="submit" variant="hero" size="lg" className="w-full text-base py-6" disabled={loading}>
                 {loading ? (
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -394,16 +404,34 @@ const RequestForm = () => {
                 )}
                 {loading ? "Publicando..." : "Publicar pedido gratuitamente"}
               </Button>
-
-              {!user && (
-                <p className="text-center text-sm text-muted-foreground">
-                  Você precisa <a href="/auth" className="text-primary underline">entrar ou cadastrar</a> para publicar.
-                </p>
-              )}
             </div>
           </motion.form>
         </div>
       </div>
+
+      <Dialog open={authPromptOpen} onOpenChange={setAuthPromptOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Entre para publicar seu pedido</DialogTitle>
+            <DialogDescription>
+              Para publicar seu pedido e receber propostas de corretores, você precisa ter uma conta. É rápido e gratuito.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button variant="outline" onClick={() => setAuthPromptOpen(false)}>
+              Cancelar
+            </Button>
+            <Button variant="outline" onClick={() => navigate("/auth")}>
+              <LogIn className="mr-2 h-4 w-4" />
+              Entrar
+            </Button>
+            <Button variant="hero" onClick={() => navigate("/auth?mode=signup")}>
+              <UserPlus className="mr-2 h-4 w-4" />
+              Cadastrar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
