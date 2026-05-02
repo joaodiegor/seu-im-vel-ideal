@@ -34,8 +34,30 @@ const Auth = () => {
     if (user) navigate("/");
   }, [user, navigate]);
 
+  const translateAuthError = (msg: string): string => {
+    const m = msg.toLowerCase();
+    if (m.includes("password should be at least")) return "A senha deve ter no mínimo 6 caracteres.";
+    if (m.includes("password") && m.includes("short")) return "A senha deve ter no mínimo 6 caracteres.";
+    if (m.includes("weak") || m.includes("pwned") || m.includes("compromised") || m.includes("leaked"))
+      return "Essa senha é muito comum ou já foi vazada. Escolha uma senha mais segura.";
+    if (m.includes("invalid login credentials")) return "E-mail ou senha incorretos.";
+    if (m.includes("user already registered") || m.includes("already been registered"))
+      return "Este e-mail já está cadastrado.";
+    if (m.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar.";
+    if (m.includes("invalid email")) return "E-mail inválido.";
+    if (m.includes("rate limit") || m.includes("too many"))
+      return "Muitas tentativas. Aguarde alguns minutos e tente novamente.";
+    return msg;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (mode === "signup" && form.password.length < 6) {
+      toast.error("A senha deve ter no mínimo 6 caracteres.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -95,7 +117,7 @@ const Auth = () => {
         navigate("/");
       }
     } catch (error: any) {
-      toast.error(error.message || "Erro ao processar. Tente novamente.");
+      toast.error(translateAuthError(error.message || "") || "Erro ao processar. Tente novamente.");
     } finally {
       setLoading(false);
     }
