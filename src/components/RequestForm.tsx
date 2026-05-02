@@ -5,12 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Home, MapPin, DollarSign, Send, Loader2 } from "lucide-react";
+import { Home, MapPin, DollarSign, Send, Loader2, LogIn, UserPlus, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { BRAZIL_STATES, getCitiesByState, getNeighborhoodsByCity, OTHER_NEIGHBORHOOD } from "@/lib/locations";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const tiposComQuartos = ["casa", "apartamento", "casa_condominio"];
 
