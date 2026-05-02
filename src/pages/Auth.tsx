@@ -174,8 +174,20 @@ const Auth = () => {
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="(98) 99999-9999"
+                    inputMode="tel"
                     value={form.phone}
-                    onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                    onChange={(e) => {
+                      const nums = e.target.value.replace(/\D/g, "").slice(0, 11);
+                      let masked = nums;
+                      if (nums.length > 2 && nums.length <= 7) {
+                        masked = `(${nums.slice(0, 2)}) ${nums.slice(2)}`;
+                      } else if (nums.length > 7) {
+                        masked = `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7)}`;
+                      } else if (nums.length > 0) {
+                        masked = `(${nums}`;
+                      }
+                      setForm({ ...form, phone: masked });
+                    }}
                     className="pl-10"
                   />
                 </div>
